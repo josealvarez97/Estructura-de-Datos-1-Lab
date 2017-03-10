@@ -1,0 +1,111 @@
+﻿@model IEnumerable<Lab02_JoseAlvarez_OscarLemus.Models.Invoice>
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Facturas</h2>
+
+
+@using (Html.BeginForm("ReadInvoice", "Invoice", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <input type="file" name="uploadedFile" />
+    <br />
+    <button type="submit">Subir Archivo</button>
+    <br />
+}
+
+<br />
+
+@using (Html.BeginForm("Add", "Invoice", FormMethod.Post))
+{
+    <label>Serial (puede dejarlo vacio y se generará aleatoriamente)</label>
+    <br />
+    <input type="text" name="serial" id="serial" />
+
+    <br />
+    <label>Correlativo</label>
+    <br />
+    <br />
+    <input type="text" name="correlative" id="correlative" />
+    <br />
+
+    <label>Cliente</label>
+    <br />
+    <input type="text" name="customer" id="customer" />
+    <br />
+
+    <br />
+    <label>NIT</label>
+    <br />
+    <input type="text" name="NIT" id="NIT" />
+    <br />
+
+    <br />
+    <label>Fecha</label>
+    <br />
+    <input type="text" name="date" id="date" />
+    <br />
+
+    <br />
+    <label>Descripción de compra</label>
+    <br />
+    <input type="text" name="date" id="date" />
+
+    <br />
+    <label>Total</label>
+    <br />
+    <input type="text" name="total" id="total" />
+    <br />
+
+    <button type="submit">Agregar producto</button>
+
+
+
+}
+
+
+
+
+
+@if (Session["InvoiceTree"] != null)
+{
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.customer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.purchaseDescription)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.total)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.customer)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.purchaseDescription)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.total)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.serial })  |
+                    @Html.ActionLink("Details", "Details", new { id = item.serial }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.serial })
+                </td>
+            </tr>
+        }
+
+    </table>
+}
+else
+{
+    <h3>No hay datos</h3>
+}
