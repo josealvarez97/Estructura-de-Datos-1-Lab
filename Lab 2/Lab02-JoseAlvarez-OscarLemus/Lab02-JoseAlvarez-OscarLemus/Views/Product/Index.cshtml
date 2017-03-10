@@ -1,0 +1,100 @@
+﻿@model IEnumerable<Lab02_JoseAlvarez_OscarLemus.Models.Product>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<body style="background-color:powderblue;">
+
+    <h2>Inventario</h2>
+
+
+    @using (Html.BeginForm("LeerArchivo", "Product", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <input type="file" name="ArchivoCargado" />
+        <br />
+        <button type="submit">Subir archivo</button>
+        <br />
+    }
+
+    <br />
+
+
+    @using (Html.BeginForm("Add", "Product", FormMethod.Post))
+    {
+        <label>Código de Producto: </label>
+        <br />
+        <input type="text" name="product_key" id="product_key" />
+        <br />
+        <label>Descripción del Producto: </label>
+        <br />
+        <input type="text" name="product_description" id="product_description" />
+        <br />
+        <label>Precio del Producto: </label>
+        <br />
+        <input type="text" name="product_price" id="product_price" />
+        <br />
+        <label>Cantidad de Producto: </label>
+        <br />
+        <input type="text" name="quantity_of_product" id="quantity_of_product" />
+        <br />
+
+        <button type="submit">Agregar producto</button>
+        <br />
+    }
+
+    <br />
+    @if (Session["ProductsTree"] != null)
+    {
+        using (Html.BeginForm("Search", "Product", FormMethod.Get))
+        {
+            <p>
+                Código de Producto: @Html.TextBox("product_key") <br />
+                <input type="submit" value="Filter"/>
+            </p>
+        }
+
+
+        <table class="table" style="background-color:#62BDFF;">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.product_description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.product_price)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.quantity_of_product)
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.product_description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.product_price)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.quantity_of_product)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.product_key }, new { @style = "color:#5A117F;" })  |
+                        @Html.ActionLink("Details", "Details", new { id = item.product_key }, new { @style = "color:#5A117F;" }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.product_key }, new { @style = "color:#5A117F;" })
+                    </td>
+                </tr>
+            }
+
+        </table>
+    }
+    else
+    {
+        <h3>No hay datos</h3>
+    }
+
+    </body>
+
