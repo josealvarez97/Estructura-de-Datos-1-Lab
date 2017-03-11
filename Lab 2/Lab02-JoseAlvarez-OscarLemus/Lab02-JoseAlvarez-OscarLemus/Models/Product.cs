@@ -13,7 +13,7 @@ namespace Lab02_JoseAlvarez_OscarLemus.Models
         [Key]
         [Required]
         [DisplayName("Codigo de producto")]
-        public int product_key { get; set; }
+        public string product_key { get; set; }
 
         [Required]
         [DisplayName("Descripcion del producto")]
@@ -21,13 +21,13 @@ namespace Lab02_JoseAlvarez_OscarLemus.Models
 
         [Required]
         [DisplayName("Precio")]
-        public int product_price { get; set; }
+        public string product_price { get; set; }
 
         [Required]
         [DisplayName("Cantidad en inventario")]
         public int quantity_of_product { get; set; }
 
-        public Product(int _product_key, string _product_description, int _product_price, int _quantity_of_product)
+        public Product(string _product_key, string _product_description, string _product_price, int _quantity_of_product)
         {
             this.product_key = _product_key;
             this.product_description = _product_description;
