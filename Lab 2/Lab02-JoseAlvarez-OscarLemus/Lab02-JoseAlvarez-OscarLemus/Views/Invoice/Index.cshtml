@@ -72,7 +72,16 @@
     <table class="table">
         <tr>
             <th>
+                @Html.DisplayNameFor(model => model.serial)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.correlative)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.customer)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.date)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.purchaseDescription)
@@ -87,7 +96,16 @@
         {
             <tr>
                 <td>
+                    @Html.DisplayFor(modelItem => item.serial)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.correlative)
+                </td>
+                <td>
                     @Html.DisplayFor(modelItem => item.customer)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.date)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.purchaseDescription)
@@ -96,7 +114,7 @@
                     @Html.DisplayFor(modelItem => item.total)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.serial })  |
+                    @Html.ActionLink("Edit", "Edit", new { serial = item.serial, correlative = item.correlative })  |
                     @Html.ActionLink("Details", "Details", new { id = item.serial }) |
                     @Html.ActionLink("Delete", "Delete", new { id = item.serial })
                 </td>

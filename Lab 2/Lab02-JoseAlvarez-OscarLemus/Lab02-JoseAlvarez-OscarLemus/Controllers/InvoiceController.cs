@@ -27,28 +27,36 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
             else
                 Session["InvoiceTree"] = InvoiceTree;
 
-            return View(Session["ProductsTree"]);
+            return View(Session["InvoiceTree"]);
         }
 
 
         // GET: Invoice/Edit/5
-        public ActionResult Edit(int id)
+        public ActionResult Edit(string serial, string correlative)
         {
             return View();
         }
 
         // POST: Invoice/Edit/5
         [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
+        public ActionResult Edit(string serial, string correlative, FormCollection collection)
         {
             BinaryTree<Invoice> InvoiceTree = (BinaryTree<Invoice>)Session["InvoiceTree"];
 
-            string serial = Request.Form[0];
-            string correlative = Request.Form[1];
-            string customer = Request.Form[2];
-            string NIT = Request.Form[3];
-            string 
-            string purchaseDescription = Request.Form[0];
+            //string serial = Request.Form[0];
+            //string correlative = Request.Form[1];
+            string customer = Request.Form[0];
+            string NIT = Request.Form[1];
+            string date = Request.Form[2];
+            string purchaseDescription = Request.Form[3];
+            string total = Request.Form[4];
+
+            Invoice InvoiceObj = new Invoice(serial, correlative, customer, NIT, date, purchaseDescription, total);
+
+            // We send a delegate stating the criteria for search, 
+            // which in this case is the ---------
+            // Furthermore, se send the new info that will replace the existing one.
+            InvoiceTree.Search(delegate (Invoice x, Invoice y) { return (x.serial + y.correlative).CompareTo(y.serial + y.correlative); }, InvoiceObj);
 
             Session["InvoiceTree"] = InvoiceTree;
             return RedirectToAction("Index", Session["InvoiceTree"]);
@@ -136,10 +144,6 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
 
             Session["InvoiceTree"] = InvoiceTree;
             return View("Index", Session["InvoiceTree"]);
-
-
-
-
 
         }
 
