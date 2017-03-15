@@ -32,8 +32,8 @@ namespace Lab02_JoseAlvarez_OscarLemus.Models
 
         //The products must exist
         [Required]
-        [DisplayName("Descripión de compra")]
-        public string purchaseDescription { get; set; }
+        [DisplayName("Código de producto")]
+        public string productCode { get; set; }
 
         [Required]
         [DisplayName("Total")]
@@ -41,30 +41,38 @@ namespace Lab02_JoseAlvarez_OscarLemus.Models
 
 
         // With Random Serial
-        public Invoice(string correlative, string customer, string NIT, string date, string purchaseDescription, string total)
+        public Invoice(string correlative, string customer, string NIT, string date, string productCode, string total)
         {
             this.serial = (new Random().Next(1, 1000)).ToString();
             this.correlative = correlative;
             this.customer = customer;
             this.NIT = NIT;
             this.date = date;
-            this.purchaseDescription = purchaseDescription;
+            this.productCode = productCode;
             this.total = total;
         }
 
 
         // With Not Random Serial
-        public Invoice(string serial, string correlative, string customer, string NIT, string date, string purchaseDescription, string total)
+        public Invoice(string serial, string correlative, string customer, string NIT, string date, string productCode, string total)
         {
             this.serial = serial;
             this.correlative = correlative;
             this.customer = customer;
             this.NIT = NIT;
             this.date = date;
-            this.purchaseDescription = purchaseDescription;
+            this.productCode = productCode;
             this.total = total;
         }
 
+        public Invoice(string serial, string correlative, string customer, string NIT, string date)
+        {
+            this.serial = serial;
+            this.correlative = correlative;
+            this.customer = customer;
+            this.NIT = NIT;
+            this.date = date;
+        }
 
         public static int compareInvoices(Invoice x, Invoice y)
         {
@@ -78,5 +86,10 @@ namespace Lab02_JoseAlvarez_OscarLemus.Models
             //    return 0;
             return (x.serial + x.correlative).CompareTo(y.serial + y.correlative);
         }
+
+
+
+
+
     }
 }

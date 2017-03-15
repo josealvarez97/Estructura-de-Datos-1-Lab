@@ -31,6 +31,12 @@
                 @Html.EditorFor(model => model.correlative, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.correlative, "", new { @class = "text-danger" })
             </div>*@
+
+        <div>
+            <p>Serie: @Html.DisplayFor(model => model.serial)</p>
+        </div>
+        <div>
+            <p>Correlativo: @Html.DisplayFor(model => model.correlative)</p>
         </div>
 
         <div class="form-group">
