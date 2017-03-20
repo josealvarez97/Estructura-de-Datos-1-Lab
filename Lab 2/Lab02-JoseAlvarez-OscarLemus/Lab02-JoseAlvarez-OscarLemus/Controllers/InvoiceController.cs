@@ -16,12 +16,12 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
         // GET: Invoice
         public ActionResult Index()
         {
-            BinaryTree<Invoice> InvoiceTree;
+            AVLTree<Invoice, Invoice> InvoiceTree;
             // If there's already a tree, we work on it. Otherwise, we create a new one.
             if (Session["InvoiceTree"] != null)
-                InvoiceTree = (BinaryTree<Invoice>)Session["InvoiceTree"];
+                InvoiceTree = (AVLTree<Invoice, Invoice>)Session["InvoiceTree"];
             else
-                InvoiceTree = new BinaryTree<Invoice>();
+                InvoiceTree = new AVLTree<Invoice, Invoice>(Invoice.compareInvoices);
 
             // Session["ProductsTree"] will be considered null if there's no item in the tree
             if (InvoiceTree.Size() == 0)
@@ -43,7 +43,7 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
         [HttpPost]
         public ActionResult Edit(string serial, string correlative, FormCollection collection)
         {
-            BinaryTree<Invoice> InvoiceTree = (BinaryTree<Invoice>)Session["InvoiceTree"];
+            AVLTree<Invoice, Invoice> InvoiceTree = (AVLTree<Invoice, Invoice>)Session["InvoiceTree"];
 
             //string serial = Request.Form[0];
             //string correlative = Request.Form[1];
@@ -57,8 +57,8 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
 
             // We send a delegate stating the criteria for search, 
             // which in this case is the ---------
-            // Furthermore, se send the new info that will replace the existing one.
-            InvoiceTree.Search(delegate (Invoice x, Invoice y) { return (x.serial + y.correlative).CompareTo(y.serial + y.correlative); }, InvoiceObj);
+            // Furthermore, we send the new info that will replace the existing one.
+            InvoiceTree.Search(Invoice.compareInvoices, InvoiceObj);
 
             Session["InvoiceTree"] = InvoiceTree;
             return RedirectToAction("Index", Session["InvoiceTree"]);
@@ -70,12 +70,12 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
         [HttpPost] //Since user is retrieving data
         public ActionResult ReadInvoice(HttpPostedFileBase uploadedFile)
         {
-            BinaryTree<Invoice> InvoiceTree;
+            AVLTree<Invoice, Invoice> InvoiceTree;
             // If there's already a tree, we work on it. Otherwise, we create a new one.
             if (Session["InvoiceTree"] != null)
-                InvoiceTree = (BinaryTree<Invoice>)Session["InvoiceTree"];
+                InvoiceTree = (AVLTree<Invoice, Invoice>)Session["InvoiceTree"];
             else
-                InvoiceTree = new BinaryTree<Invoice>();
+                InvoiceTree = new AVLTree<Invoice, Invoice>(Invoice.compareInvoices);
 
 
             if (uploadedFile == null)
@@ -102,7 +102,7 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
                             string date = fields[4];
 
                             Invoice aNewInvoice = new Invoice(serial, correlative, customer, NIT, date);
-                            InvoiceTree.Insert(aNewInvoice, (Invoice x, Invoice y) => (x.serial + x.correlative).CompareTo(y.serial + y.correlative));
+                            InvoiceTree.Insert(aNewInvoice, aNewInvoice);
 
                         }
                     }
@@ -117,12 +117,12 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
         [HttpPost] //Since user is retrieving data
         public ActionResult ReadInvoiceDetails(HttpPostedFileBase uploadedFile)
         {
-            BinaryTree<Invoice> InvoiceTree;
+            AVLTree<Invoice, Invoice> InvoiceTree;
             // If there's already a tree, we work on it. Otherwise, we create a new one.
             if (Session["InvoiceTree"] != null)
-                InvoiceTree = (BinaryTree<Invoice>)Session["InvoiceTree"];
+                InvoiceTree = (AVLTree<Invoice, Invoice>)Session["InvoiceTree"];
             else
-                InvoiceTree = new BinaryTree<Invoice>();
+                InvoiceTree = new AVLTree<Invoice, Invoice>(Invoice.compareInvoices);
 
 
             if (uploadedFile == null)
@@ -170,15 +170,15 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
 
         public ActionResult Add(string serial, string correlative, string customer, string NIT, string date, string productCode, string total)
         {
-            BinaryTree<Invoice> InvoiceTree;
+            AVLTree<Invoice, Invoice> InvoiceTree;
             if (Session["InvoiceTree"] != null)
-                InvoiceTree = (BinaryTree<Invoice>)Session["InvoiceTree"];
+                InvoiceTree = (AVLTree<Invoice, Invoice>)Session["InvoiceTree"];
             else
-                InvoiceTree = new BinaryTree<Invoice>();
+                InvoiceTree = new AVLTree<Invoice, Invoice>(Invoice.compareInvoices);
 
 
             Invoice InvoiceObj = new Invoice(serial, correlative, customer, NIT, date, productCode, total);
-            InvoiceTree.Insert(InvoiceObj, Invoice.compareInvoices);
+            InvoiceTree.Insert(InvoiceObj, InvoiceObj/*, Invoice.compareInvoices*/);
 
 
             Session["InvoiceTree"] = InvoiceTree;
