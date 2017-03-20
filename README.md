@@ -9,3 +9,6 @@ http://stackoverflow.com/questions/22046808/how-to-ignore-files-using-git-gui-tc
 http://stackoverflow.com/questions/22046808/how-to-ignore-files-using-git-gui-tcl-tk-application
 http://stackoverflow.com/questions/2143956/gitignore-for-visual-studio-projects-and-solutions
 http://stackoverflow.com/questions/1644653/which-files-in-a-visual-c-sharp-studio-project-dont-need-to-be-versioned
+
+## Arbol AVL
+https://bitlush.com/blog/efficient-avl-tree-in-c-sharp
