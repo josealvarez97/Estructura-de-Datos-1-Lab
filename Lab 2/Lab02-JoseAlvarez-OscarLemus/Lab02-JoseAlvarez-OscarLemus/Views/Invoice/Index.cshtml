@@ -97,6 +97,9 @@
                 @Html.DisplayNameFor(model => model.productCode)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.purchasedProduct)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.total)
             </th>
             <th></th>
@@ -123,6 +126,9 @@
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.productCode)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.purchasedProduct)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.total)
