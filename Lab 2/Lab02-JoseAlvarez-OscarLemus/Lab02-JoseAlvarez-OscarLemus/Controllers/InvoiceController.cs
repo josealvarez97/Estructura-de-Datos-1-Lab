@@ -84,29 +84,29 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
 
 
             if (uploadedFile != null && uploadedFile.ContentLength > 0)
-                //if (uploadedFile.FileName.EndsWith(".csv"))
+            //if (uploadedFile.FileName.EndsWith(".csv"))
+            {
+                Stream stream = uploadedFile.InputStream;
+                using (TextFieldParser csvParser = new TextFieldParser(stream))
                 {
-                    Stream stream = uploadedFile.InputStream;
-                    using (TextFieldParser csvParser = new TextFieldParser(stream))
+                    csvParser.SetDelimiters(new string[] { "," });
+                    csvParser.HasFieldsEnclosedInQuotes = true;
+
+                    while (!csvParser.EndOfData)
                     {
-                        csvParser.SetDelimiters(new string[] { "," });
-                        csvParser.HasFieldsEnclosedInQuotes = true;
+                        string[] fields = csvParser.ReadFields();
+                        string serial = fields[0];
+                        string correlative = fields[1];
+                        string customer = fields[2];
+                        string NIT = fields[3];
+                        string date = fields[4];
 
-                        while (!csvParser.EndOfData)
-                        {
-                            string[] fields = csvParser.ReadFields();
-                            string serial = fields[0];
-                            string correlative = fields[1];
-                            string customer = fields[2];
-                            string NIT = fields[3];
-                            string date = fields[4];
+                        Invoice aNewInvoice = new Invoice(serial, correlative, customer, NIT, date);
+                        InvoiceTree.Insert(aNewInvoice, aNewInvoice);
 
-                            Invoice aNewInvoice = new Invoice(serial, correlative, customer, NIT, date);
-                            InvoiceTree.Insert(aNewInvoice, aNewInvoice);
-
-                        }
                     }
                 }
+            }
 
             Session["InvoiceTree"] = InvoiceTree;
             return View("Index", Session["InvoiceTree"]);
@@ -161,13 +161,27 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
                                 InvoiceOfInterest.productCode = productCode;
                                 InvoiceOfInterest.total = total;
 
-                                //Since objects are passed by reference, we are done.
+                                if (Session["ProductsTree"] != null)
+                                {
+
+                                    Product productObj = new Product(productCode, null, null, null);
+
+
+                                    productObj = ((BinaryTree<Product>)Session["ProductsTree"]).SearchOnly((Product x, Product y) => x.product_key.CompareTo(y.product_key), productObj);
+
+                                    string purchasedProduct = productObj.product_description;
+
+                                    InvoiceOfInterest.purchasedProduct = purchasedProduct;
+
+                                }
                             }
-                            catch(Exception e)
+
+                            //Since objects are passed by reference, we are done.
+                            catch (Exception e)
                             {
 
                             }
-                            
+
 
 
                         }
@@ -209,32 +223,32 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
 
 
 
-     //var information = line.Split(',');
+//var information = line.Split(',');
 
-                            //Invoice InvoiceObj = null;
-                            //if (information.Length == 7) //means there's specific serial in the parameters
-                            //{
-                            //    int total = -1;
-                            //    //Data validation
-                            //    try
-                            //    {
-                            //        total = int.Parse(information[6]);
-                            //    }
-                            //    catch (Exception)
-                            //    {
-                            //    }
-                            //    InvoiceObj = new Invoice(information[0], information[1], information[2], information[3], information[4], information[5], information[6]);
-                            //}
-                            //else if (information.Length == 6) // means no serial in the parameteres, there will be a random one.
-                            //{
-                            //    int total = -1;
-                            //    //Data validation
-                            //    try
-                            //    {
-                            //        total = int.Parse(information[7]);
-                            //    }
-                            //    catch (Exception)
-                            //    {
-                            //    }
-                            //    InvoiceObj = new Invoice(information[0], information[1], information[2], information[3], information[4], information[5]);
-                            //}
+//Invoice InvoiceObj = null;
+//if (information.Length == 7) //means there's specific serial in the parameters
+//{
+//    int total = -1;
+//    //Data validation
+//    try
+//    {
+//        total = int.Parse(information[6]);
+//    }
+//    catch (Exception)
+//    {
+//    }
+//    InvoiceObj = new Invoice(information[0], information[1], information[2], information[3], information[4], information[5], information[6]);
+//}
+//else if (information.Length == 6) // means no serial in the parameteres, there will be a random one.
+//{
+//    int total = -1;
+//    //Data validation
+//    try
+//    {
+//        total = int.Parse(information[7]);
+//    }
+//    catch (Exception)
+//    {
+//    }
+//    InvoiceObj = new Invoice(information[0], information[1], information[2], information[3], information[4], information[5]);
+//}
