@@ -79,7 +79,7 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
 
             string product_description = Request.Form[2];
             string product_price = Request.Form[3];
-            int quantity_of_product = int.Parse(Request.Form[4]);
+            string quantity_of_product = Request.Form[4];
 
             Product ProductObj = new Product(id.ToString(), product_description, product_price, quantity_of_product);
 
@@ -176,7 +176,7 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
 
 
 
-                    Product ProductObj = new Product(product_key, description, product_price, int.Parse(quantity_of_product));
+                    Product ProductObj = new Product(product_key, description, product_price, quantity_of_product);
 
                     ProductsTree.Insert(ProductObj, delegate (Product x, Product y) { return x.product_key.CompareTo(y.product_key); });
 
@@ -197,7 +197,7 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
                 ProductsTree = new BinaryTree<Product>();
 
 
-            Product ProductObj = new Product(product_key, product_description, product_price, int.Parse(quantity_of_product));
+            Product ProductObj = new Product(product_key, product_description, product_price, quantity_of_product);
 
             ProductsTree.Insert(ProductObj, delegate (Product x, Product y) { return x.product_key.CompareTo(y.product_key); });
 
@@ -208,7 +208,7 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
         public ActionResult Search(long product_key)
         {
             ProductsTree = (BinaryTree<Product>)Session["ProductsTree"];
-            Product ProductObj = new Product(product_key.ToString(), null, "", -1);
+            Product ProductObj = new Product(product_key.ToString(), null, "", "");
 
             Product product = ProductsTree.SearchOnly(delegate (Product x, Product y) { return x.product_key.CompareTo(y.product_key); }, ProductObj);
 

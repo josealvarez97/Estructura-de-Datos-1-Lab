@@ -377,25 +377,26 @@ namespace Lab02_JoseAlvarez_OscarLemus.Extras
         /// <param name="node"></param>
         /// <param name="comparer">Criterio para buscar en el arbol, en este caso es de la misma data pero al llamar el metodo se especifica porque caracteristica de la data se desea buscar</param>
         /// <param name="data_">Informacion nueva para colocar</param>
-        public void Search(AvlNode node, Comparison<TKey> comparer, TKey key)
+        public void Search(AvlNode node, Comparison<TKey> comparer, TKey key, TValue value)
         {
             if (comparer(key, node.Key) == 0)
             {
                 node.Key = key;
-            }
-            else if (comparer(key, node.Key) == 1)
-            {
-                Search(node.Left, comparer, key);
+                node.Value = value;
             }
             else if (comparer(key, node.Key) == -1)
             {
-                Search(node.Right, comparer, key);
+                Search(node.Left, comparer, key, value);
+            }
+            else if (comparer(key, node.Key) == 1)
+            {
+                Search(node.Right, comparer, key, value);
             }
         }
 
-        public void Search(Comparison<TKey> comparer, TKey data_)
+        public void Search(Comparison<TKey> comparer, TKey key, TValue value)
         {
-            Search(_root, comparer, data_);
+            Search(_root, comparer, key, value);
         }
 
 
