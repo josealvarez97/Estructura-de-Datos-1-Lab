@@ -47,18 +47,18 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
 
             //string serial = Request.Form[0];
             //string correlative = Request.Form[1];
-            string customer = Request.Form[0];
-            string NIT = Request.Form[1];
-            string date = Request.Form[2];
-            string productCode = Request.Form[3];
-            string total = Request.Form[4];
+            string customer = Request.Form[2];
+            string NIT = Request.Form[3];
+            string date = Request.Form[4];
+            string productCode = Request.Form[5];
+            string total = Request.Form[6];
 
             Invoice InvoiceObj = new Invoice(serial, correlative, customer, NIT, date, productCode, total);
 
             // We send a delegate stating the criteria for search, 
             // which in this case is the ---------
             // Furthermore, we send the new info that will replace the existing one.
-            InvoiceTree.Search(Invoice.compareInvoices, InvoiceObj);
+            InvoiceTree.Search(Invoice.compareInvoices, InvoiceObj, InvoiceObj);
 
             Session["InvoiceTree"] = InvoiceTree;
             return RedirectToAction("Index", Session["InvoiceTree"]);
