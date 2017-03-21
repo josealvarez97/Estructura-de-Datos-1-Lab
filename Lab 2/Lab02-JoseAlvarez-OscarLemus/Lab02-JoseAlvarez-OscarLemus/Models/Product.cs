@@ -25,9 +25,9 @@ namespace Lab02_JoseAlvarez_OscarLemus.Models
 
         [Required]
         [DisplayName("Cantidad en inventario")]
-        public int quantity_of_product { get; set; }
+        public string quantity_of_product { get; set; }
 
-        public Product(string _product_key, string _product_description, string _product_price, int _quantity_of_product)
+        public Product(string _product_key, string _product_description, string _product_price, string _quantity_of_product)
         {
             this.product_key = _product_key;
             this.product_description = _product_description;
