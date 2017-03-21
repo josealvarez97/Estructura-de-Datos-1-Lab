@@ -354,11 +354,11 @@ namespace Lab02_JoseAlvarez_OscarLemus.Extras
             {
                 return node.Value;
             }
-            else if (comparer(key, node.Key) == 1)
+            else if (comparer(key, node.Key) == -1)
             {
                 Data = SearchOnly(node.Left, comparer, key);
             }
-            else if (comparer(key, node.Key) == -1)
+            else if (comparer(key, node.Key) == 1)
             {
                 Data = SearchOnly(node.Right, comparer, key);
             }
