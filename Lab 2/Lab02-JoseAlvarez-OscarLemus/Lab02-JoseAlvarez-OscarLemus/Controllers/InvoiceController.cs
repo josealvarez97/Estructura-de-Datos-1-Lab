@@ -151,13 +151,24 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
                             // We create an object with enough information to find the invoice
                             Invoice IncompleteInvoice = new Invoice(serial, correlative, null, null, null);
 
-                            //We use this object to find the Invoice Of Interest with the missing information (details: productCode, total)
-                            Invoice InvoiceOfInterest = InvoiceTree.SearchOnly(Invoice.compareInvoices, IncompleteInvoice);
-                            //We add the missing information
-                            InvoiceOfInterest.productCode = productCode;
-                            InvoiceOfInterest.total = total;
 
-                            //Since objects are passed by reference, we are done.
+                            try
+                            {
+                                //We use this object to find the Invoice Of Interest with the missing information (details: productCode, total)
+                                Invoice InvoiceOfInterest = InvoiceTree.SearchOnly(Invoice.compareInvoices, IncompleteInvoice);
+
+                                //We add the missing information
+                                InvoiceOfInterest.productCode = productCode;
+                                InvoiceOfInterest.total = total;
+
+                                //Since objects are passed by reference, we are done.
+                            }
+                            catch(Exception e)
+                            {
+
+                            }
+                            
+
 
                         }
                     }
