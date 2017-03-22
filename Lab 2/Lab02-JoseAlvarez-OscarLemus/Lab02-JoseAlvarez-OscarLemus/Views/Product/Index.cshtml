@@ -49,6 +49,7 @@
         using (Html.BeginForm("Search", "Product", FormMethod.Get))
         {
             <p>
+                <h3>Buscar Producto:</h3><br />
                 Código de Producto: @Html.TextBox("product_key") <br />
                 <input type="submit" value="Filter"/>
             </p>
