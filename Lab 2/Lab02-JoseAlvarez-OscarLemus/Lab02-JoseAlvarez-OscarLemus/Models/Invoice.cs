@@ -39,6 +39,10 @@ namespace Lab02_JoseAlvarez_OscarLemus.Models
         [DisplayName("Total")]
         public string total { get; set; }
 
+        [Required]
+        [DisplayName("Producto")]
+        public string purchasedProduct { get; set; }
+
 
         // With Random Serial
         public Invoice(string correlative, string customer, string NIT, string date, string productCode, string total)
