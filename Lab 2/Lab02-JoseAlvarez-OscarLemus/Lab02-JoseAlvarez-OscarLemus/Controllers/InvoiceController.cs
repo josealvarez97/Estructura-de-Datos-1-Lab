@@ -130,65 +130,64 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
 
 
             if (uploadedFile != null && uploadedFile.ContentLength > 0)
-                if (uploadedFile.FileName.EndsWith(".csv"))
+            //if (uploadedFile.FileName.EndsWith(".csv"))
+            {
+                Stream stream = uploadedFile.InputStream;
+                using (TextFieldParser csvParser = new TextFieldParser(stream))
                 {
-                    Stream stream = uploadedFile.InputStream;
-                    using (TextFieldParser csvParser = new TextFieldParser(stream))
+                    csvParser.SetDelimiters(new string[] { "," });
+                    csvParser.HasFieldsEnclosedInQuotes = true;
+
+                    while (!csvParser.EndOfData)
                     {
-                        csvParser.SetDelimiters(new string[] { "," });
-                        csvParser.HasFieldsEnclosedInQuotes = true;
+                        string[] fields = csvParser.ReadFields();
+                        //Info para encontrar la factura correspondiente
+                        string serial = fields[0];
+                        string correlative = fields[1];
+                        //Info a agregar a factura correspondiente
+                        string productCode = fields[2];
+                        string total = fields[3];
 
-                        while (!csvParser.EndOfData)
+                        // We create an object with enough information to find the invoice
+                        Invoice IncompleteInvoice = new Invoice(serial, correlative, null, null, null);
+
+
+                        try
                         {
-                            string[] fields = csvParser.ReadFields();
-                            //Info para encontrar la factura correspondiente
-                            string serial = fields[0];
-                            string correlative = fields[1];
-                            //Info a agregar a factura correspondiente
-                            string productCode = fields[2];
-                            string total = fields[3];
+                            //We use this object to find the Invoice Of Interest with the missing information (details: productCode, total)
+                            Invoice InvoiceOfInterest = InvoiceTree.SearchOnly(Invoice.compareInvoices, IncompleteInvoice);
 
-                            // We create an object with enough information to find the invoice
-                            Invoice IncompleteInvoice = new Invoice(serial, correlative, null, null, null);
+                            //We add the missing information
+                            InvoiceOfInterest.productCode = productCode;
+                            InvoiceOfInterest.total = total;
 
+                            //InvoiceTree.Search(Invoice.compareInvoices, InvoiceOfInterest, InvoiceOfInterest);
 
-                            try
-                            {
-                                //We use this object to find the Invoice Of Interest with the missing information (details: productCode, total)
-                                Invoice InvoiceOfInterest = InvoiceTree.SearchOnly(Invoice.compareInvoices, IncompleteInvoice);
-
-                                //We add the missing information
-                                InvoiceOfInterest.productCode = productCode;
-                                InvoiceOfInterest.total = total;
-
-                                InvoiceTree.Search(Invoice.compareInvoices, InvoiceOfInterest, InvoiceOfInterest);
-
-                                if (Session["ProductsTree"] != null)
-                                {
-
-                                    Product productObj = new Product(productCode, null, null, null);
-
-
-                                    productObj = ((BinaryTree<Product>)Session["ProductsTree"]).SearchOnly((Product x, Product y) => x.product_key.CompareTo(y.product_key), productObj);
-
-                                    string purchasedProduct = productObj.product_description;
-
-                                    InvoiceOfInterest.purchasedProduct = purchasedProduct;
-
-                                }
-                            }
-
-                            //Since objects are passed by reference, we are done.
-                            catch (Exception e)
+                            //If there are information in a productsTree to relate the invoices with, we do it.
+                            if (Session["ProductsTree"] != null)
                             {
 
+                                Product productObj = new Product(productCode, null, null, null);
+
+
+                                productObj = ((BinaryTree<Product>)Session["ProductsTree"]).SearchOnly((Product x, Product y) => x.product_key.CompareTo(y.product_key), productObj);
+
+                                string purchasedProduct = productObj.product_description;
+
+                                InvoiceOfInterest.purchasedProduct = purchasedProduct;
                             }
-
-
+                        }
+                        //Since objects are passed by reference, we are done.
+                        catch (Exception e)
+                        {
 
                         }
+
+
+
                     }
                 }
+            }
 
             Session["InvoiceTree"] = InvoiceTree;
             return View("Index", Session["InvoiceTree"]);
@@ -215,7 +214,7 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
 
         public ActionResult Search(string serial, string correlative)
         {
-            AVLTree<Invoice,Invoice> InvoiceTree = (AVLTree<Invoice,Invoice>)Session["InvoiceTree"];
+            AVLTree<Invoice, Invoice> InvoiceTree = (AVLTree<Invoice, Invoice>)Session["InvoiceTree"];
             Invoice InvoiceObj = new Invoice(serial, correlative, "", "", "", "", "");
 
             Invoice product = InvoiceTree.SearchOnly(delegate (Invoice x, Invoice y) { return (x.serial + x.correlative).CompareTo((y.serial + y.correlative)); }, InvoiceObj);
@@ -227,6 +226,11 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
             return View("Index", Session["Filter"]);
         }
 
+
+
+
+
+
     }
 
 
@@ -234,35 +238,3 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
 
 
 }
-
-
-
-//var information = line.Split(',');
-
-//Invoice InvoiceObj = null;
-//if (information.Length == 7) //means there's specific serial in the parameters
-//{
-//    int total = -1;
-//    //Data validation
-//    try
-//    {
-//        total = int.Parse(information[6]);
-//    }
-//    catch (Exception)
-//    {
-//    }
-//    InvoiceObj = new Invoice(information[0], information[1], information[2], information[3], information[4], information[5], information[6]);
-//}
-//else if (information.Length == 6) // means no serial in the parameteres, there will be a random one.
-//{
-//    int total = -1;
-//    //Data validation
-//    try
-//    {
-//        total = int.Parse(information[7]);
-//    }
-//    catch (Exception)
-//    {
-//    }
-//    InvoiceObj = new Invoice(information[0], information[1], information[2], information[3], information[4], information[5]);
-//}
