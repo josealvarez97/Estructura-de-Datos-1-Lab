@@ -64,7 +64,7 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
         // GET: Product/Edit/5
         public ActionResult Edit(int id)
         {
-              
+
             return View();
         }
 
@@ -85,7 +85,7 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
 
             // Se le manda un delegado diciendole el criterio que tome para buscar, que en este caso es por codigo de producto y le mando la nueva info para reemplazarla
             ProductsTree.Search(delegate (Product x, Product y) { return x.product_key.CompareTo(y.product_key); }, ProductObj);
-       
+
 
 
             Session["ProductsTree"] = ProductsTree;
@@ -119,70 +119,78 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
         [HttpPost] // Porque obtiene datos 
         public ActionResult LeerArchivo(HttpPostedFileBase ArchivoCargado)
         {
-            // Si ya hay un arbol trabajo sobre ese, sino creo uno
-            if (Session["ProductsTree"] != null)
-                ProductsTree = (BinaryTree<Product>)Session["ProductsTree"];
-            else
-                ProductsTree = new BinaryTree<Product>();
+            try
+            {
+                // Si ya hay un arbol trabajo sobre ese, sino creo uno
+                if (Session["ProductsTree"] != null)
+                    ProductsTree = (BinaryTree<Product>)Session["ProductsTree"];
+                else
+                    ProductsTree = new BinaryTree<Product>();
 
-            if (ArchivoCargado == null)
-            {
-                return View("Index");
-            }
-            StreamReader reader = new StreamReader(ArchivoCargado.InputStream);
-            string linea = "";
-            //StreamReader reader = new StreamReader(ArchivoCargado.InputStream);
-            if (ArchivoCargado != null && ArchivoCargado.ContentLength > 0)
-            {
-                while ((linea = reader.ReadLine()) != null)
+                if (ArchivoCargado == null)
                 {
-                    string product_key = "";
-                    string description = "";
-                    string product_price = "";
-                    string quantity_of_product = "";
-                    var informacion = linea.Split(',');
-
-                    for (int i = 0; i < informacion[0].Length; i++)
+                    return View("Index");
+                }
+                StreamReader reader = new StreamReader(ArchivoCargado.InputStream);
+                string linea = "";
+                //StreamReader reader = new StreamReader(ArchivoCargado.InputStream);
+                if (ArchivoCargado != null && ArchivoCargado.ContentLength > 0)
+                {
+                    while ((linea = reader.ReadLine()) != null)
                     {
-                        if (informacion[0][i] != '"')
+                        string product_key = "";
+                        string description = "";
+                        string product_price = "";
+                        string quantity_of_product = "";
+                        var informacion = linea.Split(',');
+
+                        for (int i = 0; i < informacion[0].Length; i++)
                         {
-                            product_key = product_key + informacion[0][i];
+                            if (informacion[0][i] != '"')
+                            {
+                                product_key = product_key + informacion[0][i];
+                            }
                         }
-                    }
 
-                    for (int i = 0; i < informacion[1].Length; i++)
-                    {
-                        if (informacion[1][i] != '"')
+                        for (int i = 0; i < informacion[1].Length; i++)
                         {
-                            description = description + informacion[1][i];
+                            if (informacion[1][i] != '"')
+                            {
+                                description = description + informacion[1][i];
+                            }
                         }
-                    }
 
-                    for (int i = 0; i < informacion[2].Length; i++)
-                    {
-                        if (informacion[2][i] != '"')
+                        for (int i = 0; i < informacion[2].Length; i++)
                         {
-                            product_price = product_price + informacion[2][i];
+                            if (informacion[2][i] != '"')
+                            {
+                                product_price = product_price + informacion[2][i];
+                            }
                         }
-                    }
 
-                    for (int i = 0; i < informacion[3].Length; i++)
-                    {
-                        if (informacion[3][i] != '"')
+                        for (int i = 0; i < informacion[3].Length; i++)
                         {
-                            quantity_of_product = quantity_of_product + informacion[3][i];
+                            if (informacion[3][i] != '"')
+                            {
+                                quantity_of_product = quantity_of_product + informacion[3][i];
+                            }
                         }
+
+
+
+                        Product ProductObj = new Product(product_key, description, product_price, quantity_of_product);
+
+                        ProductsTree.Insert(ProductObj, delegate (Product x, Product y) { return x.product_key.CompareTo(y.product_key); });
+
                     }
-
-
-
-                    Product ProductObj = new Product(product_key, description, product_price, quantity_of_product);
-
-                    ProductsTree.Insert(ProductObj, delegate (Product x, Product y) { return x.product_key.CompareTo(y.product_key); });
 
                 }
+            }
+            catch (Exception e)
+            {
 
             }
+
 
             Session["ProductsTree"] = ProductsTree;
             return View("Index", Session["ProductsTree"]);
@@ -213,7 +221,7 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
             Product product = ProductsTree.SearchOnly(delegate (Product x, Product y) { return x.product_key.CompareTo(y.product_key); }, ProductObj);
 
             BinaryTree<Product> temporalTree = new BinaryTree<Product>();
-            temporalTree.Insert(product, delegate (Product x, Product y) { return x.product_key.CompareTo(y.product_key); }); 
+            temporalTree.Insert(product, delegate (Product x, Product y) { return x.product_key.CompareTo(y.product_key); });
             Session["Filter"] = temporalTree;
             Session["ProductsTree"] = ProductsTree;
             return View("Index", Session["Filter"]);

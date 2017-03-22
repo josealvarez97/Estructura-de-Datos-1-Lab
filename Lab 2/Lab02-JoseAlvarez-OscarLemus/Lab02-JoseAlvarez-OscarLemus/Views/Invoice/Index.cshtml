@@ -6,26 +6,40 @@
 <h2>Facturas</h2>
 
 
+<div>
+    <ul>
+        <li>Instrucciones</li>
+        <ol>
+            <li>Deberá examinar un archivo .csv con la info principal en "Examinar Archivo de Facturas Principal" y subirlo</li>
+            <li>Luego deberá examinar un archivo .csv con los detalles de la factura en "Examinar Archivo de Facturas Principal" y subirlo</li>
+        </ol>
+    </ul>
+</div>
+
 @using (Html.BeginForm("ReadInvoice", "Invoice", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <input type="file" name="uploadedFile" />
+    <p>Examinar Archivo de Facturas Principal</p>
+    <input type="file" name="uploadedFile" title="Examinar Archivo de Facturas Principal" />
     <br />
-    <button type="submit">Subir Archivo</button>
+    <button type="submit">Subir Archivo Principal</button>
     <br />
 }
 
 <br />
 @using (Html.BeginForm("ReadInvoiceDetails", "Invoice", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
-    <input type="file" name="uploadedFile" />
+    <p>Examinar Archivo de Facturas Principal</p>
+    <input type="file" name="uploadedFile" value="Examinar Detalles de Factura" />
     <br />
-    <button type="submit">Leer detalles de Factura</button>
+    <button type="submit">Leer Detalles de Factura</button>
     <br />
 }
 
 @using (Html.BeginForm("Add", "Invoice", FormMethod.Post))
 {
-    <label>Serial (puede dejarlo vacio y se generará aleatoriamente)</label>
+    <br />
+    <h3>Agregar Factura Manualmente</h3>
+    <label>Serial</label>
     <br />
     <input type="text" name="serial" id="serial" />
 
@@ -63,7 +77,7 @@
     <br />
     <input type="text" name="total" id="total" />
     <br />
-
+    <br />
     <button type="submit">Agregar producto</button>
 
 

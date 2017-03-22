@@ -72,41 +72,49 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
         {
             AVLTree<Invoice, Invoice> InvoiceTree;
             // If there's already a tree, we work on it. Otherwise, we create a new one.
-            if (Session["InvoiceTree"] != null)
-                InvoiceTree = (AVLTree<Invoice, Invoice>)Session["InvoiceTree"];
-            else
-                InvoiceTree = new AVLTree<Invoice, Invoice>(Invoice.compareInvoices);
+            //if (Session["InvoiceTree"] != null)
+            //InvoiceTree = (AVLTree<Invoice, Invoice>)Session["InvoiceTree"];
+            //else
+            InvoiceTree = new AVLTree<Invoice, Invoice>(Invoice.compareInvoices); // We thought it was better to always reset the structure every time we were going to read a file.
 
-
-            if (uploadedFile == null)
-                return View("Index");
-
-
-
-            if (uploadedFile != null && uploadedFile.ContentLength > 0)
-            //if (uploadedFile.FileName.EndsWith(".csv"))
+            try
             {
-                Stream stream = uploadedFile.InputStream;
-                using (TextFieldParser csvParser = new TextFieldParser(stream))
+                if (uploadedFile == null)
+                    return View("Index");
+
+
+
+                if (uploadedFile != null && uploadedFile.ContentLength > 0)
+                //if (uploadedFile.FileName.EndsWith(".csv"))
                 {
-                    csvParser.SetDelimiters(new string[] { "," });
-                    csvParser.HasFieldsEnclosedInQuotes = true;
-
-                    while (!csvParser.EndOfData)
+                    Stream stream = uploadedFile.InputStream;
+                    using (TextFieldParser csvParser = new TextFieldParser(stream))
                     {
-                        string[] fields = csvParser.ReadFields();
-                        string serial = fields[0];
-                        string correlative = fields[1];
-                        string customer = fields[2];
-                        string NIT = fields[3];
-                        string date = fields[4];
+                        csvParser.SetDelimiters(new string[] { "," });
+                        csvParser.HasFieldsEnclosedInQuotes = true;
 
-                        Invoice aNewInvoice = new Invoice(serial, correlative, customer, NIT, date);
-                        InvoiceTree.Insert(aNewInvoice, aNewInvoice);
+                        while (!csvParser.EndOfData)
+                        {
+                            string[] fields = csvParser.ReadFields();
+                            string serial = fields[0];
+                            string correlative = fields[1];
+                            string customer = fields[2];
+                            string NIT = fields[3];
+                            string date = fields[4];
 
+                            Invoice aNewInvoice = new Invoice(serial, correlative, customer, NIT, date);
+                            InvoiceTree.Insert(aNewInvoice, aNewInvoice);
+
+                        }
                     }
                 }
             }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
 
             Session["InvoiceTree"] = InvoiceTree;
             return View("Index", Session["InvoiceTree"]);
@@ -124,70 +132,78 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
             else
                 InvoiceTree = new AVLTree<Invoice, Invoice>(Invoice.compareInvoices);
 
-
-            if (uploadedFile == null)
-                return View("Index");
-
-
-            if (uploadedFile != null && uploadedFile.ContentLength > 0)
-            //if (uploadedFile.FileName.EndsWith(".csv"))
+            try
             {
-                Stream stream = uploadedFile.InputStream;
-                using (TextFieldParser csvParser = new TextFieldParser(stream))
+                if (uploadedFile == null)
+                    return View("Index");
+
+
+                if (uploadedFile != null && uploadedFile.ContentLength > 0)
+                //if (uploadedFile.FileName.EndsWith(".csv"))
                 {
-                    csvParser.SetDelimiters(new string[] { "," });
-                    csvParser.HasFieldsEnclosedInQuotes = true;
-
-                    while (!csvParser.EndOfData)
+                    Stream stream = uploadedFile.InputStream;
+                    using (TextFieldParser csvParser = new TextFieldParser(stream))
                     {
-                        string[] fields = csvParser.ReadFields();
-                        //Info para encontrar la factura correspondiente
-                        string serial = fields[0];
-                        string correlative = fields[1];
-                        //Info a agregar a factura correspondiente
-                        string productCode = fields[2];
-                        string total = fields[3];
+                        csvParser.SetDelimiters(new string[] { "," });
+                        csvParser.HasFieldsEnclosedInQuotes = true;
 
-                        // We create an object with enough information to find the invoice
-                        Invoice IncompleteInvoice = new Invoice(serial, correlative, null, null, null);
-
-
-                        try
+                        while (!csvParser.EndOfData)
                         {
-                            //We use this object to find the Invoice Of Interest with the missing information (details: productCode, total)
-                            Invoice InvoiceOfInterest = InvoiceTree.SearchOnly(Invoice.compareInvoices, IncompleteInvoice);
+                            string[] fields = csvParser.ReadFields();
+                            //Info para encontrar la factura correspondiente
+                            string serial = fields[0];
+                            string correlative = fields[1];
+                            //Info a agregar a factura correspondiente
+                            string productCode = fields[2];
+                            string total = fields[3];
 
-                            //We add the missing information
-                            InvoiceOfInterest.productCode = productCode;
-                            InvoiceOfInterest.total = total;
+                            // We create an object with enough information to find the invoice
+                            Invoice IncompleteInvoice = new Invoice(serial, correlative, null, null, null);
 
-                            //InvoiceTree.Search(Invoice.compareInvoices, InvoiceOfInterest, InvoiceOfInterest);
 
-                            //If there are information in a productsTree to relate the invoices with, we do it.
-                            if (Session["ProductsTree"] != null)
+                            try
+                            {
+                                //We use this object to find the Invoice Of Interest with the missing information (details: productCode, total)
+                                Invoice InvoiceOfInterest = InvoiceTree.SearchOnly(Invoice.compareInvoices, IncompleteInvoice);
+
+                                //We add the missing information
+                                InvoiceOfInterest.productCode = productCode;
+                                InvoiceOfInterest.total = total;
+
+                                //InvoiceTree.Search(Invoice.compareInvoices, InvoiceOfInterest, InvoiceOfInterest);
+
+                                //If there are information in a productsTree to relate the invoices with, we do it.
+                                if (Session["ProductsTree"] != null)
+                                {
+
+                                    Product productObj = new Product(productCode, null, null, null);
+
+
+                                    productObj = ((BinaryTree<Product>)Session["ProductsTree"]).SearchOnly((Product x, Product y) => x.product_key.CompareTo(y.product_key), productObj);
+
+                                    string purchasedProduct = productObj.product_description;
+
+                                    InvoiceOfInterest.purchasedProduct = purchasedProduct;
+                                }
+                            }
+                            //Since objects are passed by reference, we are done.
+                            catch (Exception e)
                             {
 
-                                Product productObj = new Product(productCode, null, null, null);
-
-
-                                productObj = ((BinaryTree<Product>)Session["ProductsTree"]).SearchOnly((Product x, Product y) => x.product_key.CompareTo(y.product_key), productObj);
-
-                                string purchasedProduct = productObj.product_description;
-
-                                InvoiceOfInterest.purchasedProduct = purchasedProduct;
                             }
-                        }
-                        //Since objects are passed by reference, we are done.
-                        catch (Exception e)
-                        {
+
+
 
                         }
-
-
-
                     }
                 }
             }
+            catch (Exception)
+            {
+
+                throw;
+            }
+            
 
             Session["InvoiceTree"] = InvoiceTree;
             return View("Index", Session["InvoiceTree"]);
@@ -217,12 +233,12 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
             AVLTree<Invoice, Invoice> InvoiceTree = (AVLTree<Invoice, Invoice>)Session["InvoiceTree"];
             Invoice InvoiceObj = new Invoice(serial, correlative, "", "", "", "", "");
 
-            Invoice product = InvoiceTree.SearchOnly(delegate (Invoice x, Invoice y) { return (x.serial + x.correlative).CompareTo((y.serial + y.correlative)); }, InvoiceObj);
+            Invoice NewInvoice = InvoiceTree.SearchOnly(delegate (Invoice x, Invoice y) { return (x.serial + x.correlative).CompareTo((y.serial + y.correlative)); }, InvoiceObj);
 
             AVLTree<Invoice, Invoice> temporalTree = new AVLTree<Invoice, Invoice>(Invoice.compareInvoices);
-            temporalTree.Insert(InvoiceObj, InvoiceObj);
+            temporalTree.Insert(NewInvoice, NewInvoice);
             Session["Filter"] = temporalTree;
-            Session["ProductsTree"] = InvoiceTree;
+            Session["InvoiceTree"] = InvoiceTree;
             return View("Index", Session["Filter"]);
         }
 
