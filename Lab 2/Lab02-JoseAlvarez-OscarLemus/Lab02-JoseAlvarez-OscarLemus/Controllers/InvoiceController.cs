@@ -161,6 +161,8 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
                                 InvoiceOfInterest.productCode = productCode;
                                 InvoiceOfInterest.total = total;
 
+                                InvoiceTree.Search(Invoice.compareInvoices, InvoiceOfInterest, InvoiceOfInterest);
+
                                 if (Session["ProductsTree"] != null)
                                 {
 
@@ -211,7 +213,19 @@ namespace Lab02_JoseAlvarez_OscarLemus.Controllers
 
         }
 
+        public ActionResult Search(string serial, string correlative)
+        {
+            AVLTree<Invoice,Invoice> InvoiceTree = (AVLTree<Invoice,Invoice>)Session["InvoiceTree"];
+            Invoice InvoiceObj = new Invoice(serial, correlative, "", "", "", "", "");
 
+            Invoice product = InvoiceTree.SearchOnly(delegate (Invoice x, Invoice y) { return (x.serial + x.correlative).CompareTo((y.serial + y.correlative)); }, InvoiceObj);
+
+            AVLTree<Invoice, Invoice> temporalTree = new AVLTree<Invoice, Invoice>(Invoice.compareInvoices);
+            temporalTree.Insert(InvoiceObj, InvoiceObj);
+            Session["Filter"] = temporalTree;
+            Session["ProductsTree"] = InvoiceTree;
+            return View("Index", Session["Filter"]);
+        }
 
     }
 
