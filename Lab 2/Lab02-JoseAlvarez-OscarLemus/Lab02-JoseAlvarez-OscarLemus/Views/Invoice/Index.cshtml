@@ -71,12 +71,23 @@
 }
 
 
-
+<br />
 
 
 @if (Session["InvoiceTree"] != null)
 {
-    <table class="table">
+    using (Html.BeginForm("Search", "Invoice", FormMethod.Get))
+    {
+        <p>
+            <h3>Buscar Factura:</h3><br />
+            Serie: @Html.TextBox("serial") <br />
+            Correlativo: @Html.TextBox("correlative") <br />
+            <input type="submit" value="Filter" />
+        </p>
+    }
+
+
+    <table class="table" style="background-color:#62BDFF;">
         <tr>
             <th>
                 @Html.DisplayNameFor(model => model.serial)
@@ -134,9 +145,9 @@
                     @Html.DisplayFor(modelItem => item.total)
                 </td>
                 <td>
-                    @Html.ActionLink("Edit", "Edit", new { serial = item.serial, correlative = item.correlative })  |
-                    @Html.ActionLink("Details", "Details", new { id = item.serial }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.serial })
+                    @Html.ActionLink("Edit", "Edit", new { serial = item.serial, correlative = item.correlative }, new { @style = "color:#5A117F;" })  |
+                    @Html.ActionLink("Details", "Details", new { id = item.serial }, new { @style = "color:#5A117F;" }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.serial }, new { @style = "color:#5A117F;" })
                 </td>
             </tr>
         }
