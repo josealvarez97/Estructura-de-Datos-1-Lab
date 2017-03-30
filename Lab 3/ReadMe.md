@@ -4,5 +4,6 @@ A la par de eso, consegui una implementación en C# que se basa en ese libro, in
 que sea mas propia nuestra implementacion y por consiguiente la manejemos mas comodos. Ya sabes, uno entiende el codigo que hizo.
 
 
-*Link de la implementacion:* https://github.com/rdcastro/btree-dotnet
-*El PDF te lo subi en este repositorio.*
+**Link de la implementacion:** https://github.com/rdcastro/btree-dotnet
+
+**El PDF te lo subi en este repositorio.**
