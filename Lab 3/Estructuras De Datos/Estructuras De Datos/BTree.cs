@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Estructuras_De_Datos
 {
-    public class BTree
+    public class BTree<Tkey, Tpointer>
     {
         /*There are lower and upper bounds on the number of keys a node can contain.
          *These bounds can be expressed in termes of a fixed integer t >= 2 called the
@@ -19,6 +19,12 @@ namespace Estructuras_De_Datos
             this.minimumDegree = minimumDegree;
         }
 
+        Node<Tkey, Tpointer> root;
+
+        int Height()
+        {
+            foreach(Node<>)
+        }
 
 
 
