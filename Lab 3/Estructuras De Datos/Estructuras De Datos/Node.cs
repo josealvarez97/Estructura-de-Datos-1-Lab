@@ -8,6 +8,8 @@ namespace Estructuras_De_Datos
 {
     class Node<Tkey, TPointer>
     {
+        int minimumDegree;
+
         //-------------------
         //EVERY NODE HAS THE FOLLOWING FIELDS
         //The number of keys currently stored in node x
@@ -24,7 +26,8 @@ namespace Estructuras_De_Datos
 
 
         //Each internal node x also contains 'degree' + 1 pointers to its children. Leaf nodes have no children, so their pointers fields are undefined
-        List<Node<Tkey, TPointer>> children;
+        public List<Node<Tkey, TPointer>> children { get; set; }
+
 
 
 
@@ -34,7 +37,23 @@ namespace Estructuras_De_Datos
          */
         bool IsFull()
         {
-            return false;
+            return this.degree == 2 * minimumDegree - 1;
+        }
+
+
+
+        int Height(int aCurrentHeight = 0)
+        {
+            if (children.Count != 0)
+            {
+                aCurrentHeight++;
+                foreach (Node<Tkey, TPointer> node in children)
+                    node.Height(aCurrentHeight);
+            }
+
+            return aCurrentHeight;
+
+
         }
 
 
