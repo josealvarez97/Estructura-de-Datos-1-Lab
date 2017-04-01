@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Estructuras_De_Datos
 {
-    class Node<Tkey, TPointer>
+    class Node<Tkey, TPointer> where Tkey : IComparable<Tkey>, IEnumerable<Tkey>
     {
         int minimumDegree;
 
@@ -19,6 +19,10 @@ namespace Estructuras_De_Datos
         List<Element<Tkey, TPointer>> elements;
         //A boolean value that is True if x is a leaf nad False if x is an internal node
         bool IsLeaf()
+        {
+            return false;
+        }
+        bool IsLeaf(Node<Tkey,TPointer> node_x)
         {
             return false;
         }
@@ -60,6 +64,54 @@ namespace Estructuras_De_Datos
 
 
 
+        public Element<Tkey, TPointer> Search(Node<Tkey,TPointer> node_x, Tkey keyToSearch)
+        {
+            int index = 0; // i <= 1
+
+
+            // Se aumenta mientras el indice sea menor que el grado, ahuevos.
+            // && Se aumenta mientras la llave que buscamos sea mayor a la llave en la que estamos...
+            //              ...No tendria caso seguir buscando a la "derecha"/aumentando si la llave que buscamos no es mayor a la que estamos.
+            while (index <= degree &&  keyToSearch.CompareTo(node_x.elements[index].key) == 1)
+                index++;
+
+            // Pues este es el caso trivial. No estoy seguro si la primera condicion es absolutamente necesaria. La segunda si.
+            if(index <= degree && keyToSearch.CompareTo(node_x.elements[index].key) == 0)
+                return node_x.elements[index];
+
+
+            // Pues aqui esta la recursion. 
+            if(IsLeaf(node_x))
+            {
+                // Naturalmente si es un nodo hoja no seguimos aplicando recursion.
+                return null;
+            }
+            else
+            {
+                // Si es un nodo con hijos pues buscamos en los hijos, o mas especificamente, en el hijo que corresponde al indice en el que vamos... 
+                //  ...("el que esta a la izquierda del nodo en el que vamos")
+                node_x = children[index];
+                return Search(node_x, keyToSearch);
+            }
+
+
+
+            /*
+             * B-TREE-SEARCH(x, k)
+                    1 i ← 1
+                    2 while i ≤ n[x] and k > keyi [x]
+                    3   do i ←i + 1
+                    4 if i ≤ n[x] and k = keyi [x]
+                    5   then return (x, i )
+                    6 if leaf [x]
+                    7   then return NIL
+                    8 else  DISK-READ(ci [x])
+                    9       return B-TREE-SEARCH(ci [x], k)
+             * 
+             * 
+             */
+
+        }
 
 
 
