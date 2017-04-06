@@ -94,7 +94,7 @@ namespace Estructuras_De_Datos
             newChildNode_z.elements.Capacity = minimumDegree - 1;// n[z] <- t-1
 
             // Aqui añadimos los elementos que corresponden al node z.
-            for (int j = 0; j < minimumDegree - 1; j++) // for j <- 1 to t-1
+            for (int j = 0; j < minimumDegree - 1 /*Porque solo caben 2t - 1 elementos*/; j++) // for j <- 1 to t-1
                 //Esto va a dar error porque la lista no esta inicializada en el tamaño que es, para eso es n[z] <- t - 1. Listo, agregue .capacity (...)
                 newChildNode_z.elements[j] = childeNode_y.elements[j + minimumDegree];
 
