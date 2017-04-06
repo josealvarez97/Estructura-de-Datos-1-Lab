@@ -16,13 +16,14 @@ namespace Estructuras_De_Datos
         int degree;
 
         //The number of keys themselves, stored in nondecreasing order
-        List<Element<Tkey, TPointer>> elements;
+        public List<Element<Tkey, TPointer>> elements;
+
         //A boolean value that is True if x is a leaf nad False if x is an internal node
-        bool IsLeaf()
+        public bool IsLeaf()
         {
             return false;
         }
-        bool IsLeaf(Node<Tkey,TPointer> node_x)
+        public bool IsLeaf(Node<Tkey,TPointer> node_x)
         {
             return false;
         }
@@ -116,7 +117,10 @@ namespace Estructuras_De_Datos
 
 
 
-
+        public int Key(Node<Tkey, TPointer> childNode)
+        {
+            return 0;
+        }
 
 
 
