@@ -73,7 +73,14 @@ namespace Estructuras_De_Datos
 
         // B-TREE-SPLIT-CHILD(x, i, y)
         /// <summary>
-        /// 
+        /// The procedure B-Tree-Split-Child takes as input a nonfull internal node x
+        /// (assumed to be in main memory), an index i, and a node y (also assumed to be in main memory)
+        /// such that y = c_i[x] is a full child of x. The procedure then splits this child in two and 
+        /// adjusts x so that it has an additional child. (To split a full root, we will first make the 
+        /// root a child of a new empty root node, so that we can use B-Tree-Split-Child.)
+        /// (...) the full node y is split about its median key S, which is moved up into y's parent node x.
+        /// Those keys in y that are greater than the median key are placed in a new node z, which is made a new
+        /// child of x.
         /// </summary>
         /// <param name="parentNode_X"></param>
         /// <param name="index"></param>
@@ -119,9 +126,135 @@ namespace Estructuras_De_Datos
             // DISK-WRITE (x)
 
 
+
+            /* This method works by straightforward "cutting and pasting." Here, y is the ith child of x and 
+             * is the node being split. Node y originally has 2t children (2t - 1 keys) but is reduced to t 
+             * children (t - 1 keys) by this operation. Node z "adopts" the t largest children (t - 1 keys) of y, 
+             * and z becomes a new child of x, positioned just after y in x's table of children. The median key of y
+             * moves up to become the key in x that separates y and z.
+             */
+
         }
 
 
+
+
+        //B-TREE-INSERT(T,k)
+        /// <summary>
+        /// We insert a key k into a B-tree T of height h in a single pass down the tree, requiring
+        /// O(h) disk accesses... (...)
+        /// The B-TREE-INSERT procedure uses B-TREE-SPLIT-CHILD to guarantee that the recursion never 
+        /// descends to a full node.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="key"></param>
+        void Insert(BTree<Tkey,Tpointer> Tree, Tkey key)
+        {
+            Node<Tkey, Tpointer> r = Tree.root; //r ← root[T ]
+
+            if(r.elements.Count == 2*(minimumDegree) - 1)
+            {
+                Node<Tkey, Tpointer> s = new Node<Tkey, Tpointer>(); //then s ← ALLOCATE-NODE()
+
+                r = s; //root[T ]← s
+
+                //leaf [s] ← FALSE. No se usará
+                s.elements.Capacity = 0;//n[s] ← 0
+
+                r = s.children[0]; //c1[s] ← r
+
+
+                SplitChild(s, 0, r); //B-TREE-SPLIT-CHILD(s, 1, r)
+                InsertNonFull(s, key); //B-TREE-INSERT-NONFULL(s, k)
+            }
+            else
+            {
+                InsertNonFull(r, key);
+            }
+
+        }
+
+        /// <summary>
+        /// Este es la adaptacion que creo que va a servir
+        /// </summary>
+        /// <param name="element"></param>
+        void Insert(Element<Tkey, Tpointer> element)
+        {
+            Node<Tkey, Tpointer> r = root; //guardamos root en r porque lo necesitaremos despues
+
+            if(root.elements.Count == 2*minimumDegree - 1) //quiere decir que esta lleno
+            {
+                Node<Tkey, Tpointer> node_s = new Node<Tkey, Tpointer>();
+                root = node_s; //hacemos el nuevo nodo s root
+                node_s.elements.Capacity = 0;
+                node_s.children[0] = r;  //hacemos el que fue root antes, un hijo de s.
+
+                SplitChild(node_s, 0, r);
+                InsertNonFull(node_s, element);
+            }
+            else
+            {
+                InsertNonFull(r, element);
+            }
+        }
+
+
+
+        // B-TREE-INSERT-NONFULL(x, k)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="node_x"></param>
+        /// <param name="key"></param>
+        void InsertNonFull(Node<Tkey, Tpointer> node_x, Tkey key)
+        {
+            //int i = node_x.elements.Count;
+
+            //if(node_x.IsLeaf())
+            //{
+            //    while(i > 0 && key.CompareTo(node_x.elements[i].key) == -1)
+            //    {
+            //        node_x.elements[i + 1] = node_x.elements[i];
+            //        i--;
+            //    }
+            //    node_x.elements[i+1] = 
+            //}
+        }
+
+        void InsertNonFull(Node<Tkey, Tpointer> node_x, Element<Tkey, Tpointer> element)
+        {
+            int i = node_x.elements.Count;
+
+            if (node_x.IsLeaf())
+            {
+                while (i > 0 && element.key.CompareTo(node_x.elements[i].key) == -1)
+                {
+                    node_x.elements[i + 1] = node_x.elements[i];
+                    i--;
+                }
+                node_x.elements[i + 1] = element;
+                node_x.elements.Capacity++;
+            }
+            else
+            {
+                while(i > 0 && element.key.CompareTo(node_x.elements[i].key) == -1)
+                {
+                    i--;
+                }
+                i++;
+
+                if(node_x.children[i].elements.Capacity == 2*minimumDegree - 1)
+                {
+                    SplitChild(node_x, i, node_x.children[i]);
+                    if(element.key.CompareTo(node_x.elements[i].key) == 1)
+                    {
+                        i++;
+                    }
+                    InsertNonFull(node_x.children[i], element);
+                }
+            }
+        }
 
     }
 }
