@@ -9,3 +9,10 @@ que sea mas propia nuestra implementacion y por consiguiente la manejemos mas co
 **El PDF te lo subi en este repositorio.**
 
 PD: Es un libro un poco turbio, pero famosisimo a nivel mundial en lo que se refiere al aprendizaje de estructuras de datos y algoritmos basicos de discreta (a la mitad de ese curso fue que lo consegui)
+
+
+
+INTERESANTES LINKS:
+
+Interesante implementacion en c++:
+https://www.codeproject.com/Articles/808055/Introduction-to-B-trees-Concepts-and-Applications
