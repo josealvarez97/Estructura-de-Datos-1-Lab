@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataStructuresURL_3._0
 {
-    class TKeyFormat : IFormatProvider, ICustomFormatter
+    class BTreeFormatProvider : IFormatProvider, ICustomFormatter
     {
         private const int KEY_LENGTH = 11;
 
