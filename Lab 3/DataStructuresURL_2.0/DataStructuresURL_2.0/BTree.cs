@@ -14,7 +14,8 @@ namespace DataStructuresURL_2._0
         int minimumDegree_t;
         int size;
         int height;
-   
+
+        Node<Tkey, TValue> root;
 
         const int HeaderNumLines = 5;
 
@@ -82,6 +83,11 @@ namespace DataStructuresURL_2._0
 
 
 
+            DiskWrite(childNode_y);
+            DiskWrite(newChildNode_z);
+            DiskWrite(parentNode_X);
+            
+
             // Nodo x modificado
             // ModificarNodo()
 
@@ -98,7 +104,87 @@ namespace DataStructuresURL_2._0
 
 
 
-        public void DiskWrite(Node<Tkey, TValue > node, string pointer)
+        //B-TREE-INSERT(T,k)
+        /// <summary>
+        /// We insert a key k into a B-tree T of height h in a single pass down the tree, requiring
+        /// O(h) disk accesses... (...)
+        /// The B-TREE-INSERT procedure uses B-TREE-SPLIT-CHILD to guarantee that the recursion never 
+        /// descends to a full node.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="key"></param>
+        void Insert(Tkey key)
+        {
+            Node<Tkey, TValue> r = root; //r ← root[T ]
+
+            if (r.elements.Count == 2 * (minimumDegree_t) - 1)
+            {
+                Node<Tkey, TValue> s = new Node<Tkey, TValue>(); //then s ← ALLOCATE-NODE()
+
+                r = s; //root[T ]← s
+
+                //leaf [s] ← FALSE. No se usará
+                s.elements.Capacity = 0;//n[s] ← 0
+
+                s.children[0] = r; //c1[s] ← r
+
+
+                SplitChild(s, 0, r); //B-TREE-SPLIT-CHILD(s, 1, r)
+                InsertNonFull(s, key); //B-TREE-INSERT-NONFULL(s, k)
+            }
+            else
+            {
+                InsertNonFull(r, key);
+            }
+
+        }
+
+        public void InsertNonFull(Node<Tkey, TValue> Node_x, Tkey key)
+        {
+            int i = Node_x.elements.Count; //i ← n[x]. 
+
+            if (Node_x.IsLeaf())
+            {
+                // Correr los elementos hasta encontrar un elemento mayor
+                while(i >= 0 /*Para tomar en cuenta el primer elemento de la lista*/
+                    && key.CompareTo(Node_x.elements[i].key) == -1)
+                {
+                    Node_x.elements[i + 1].key = Node_x.elements[i].key;
+                    i--;
+                }
+                DiskWrite(Node_x);
+            }
+            else //En este caso no es un nodo hoja
+            {
+                while (i >= 0
+                    && key.CompareTo(Node_x.elements[i].key) == -1)
+                {
+                    //Retrocedemos el contador hasta encontrar... no se
+                    i--;
+                }
+                i++;
+
+                DiskRead(Node_x.children[i]);
+
+                if(Node_x.children[i].elements.Count == (2 * minimumDegree_t - 1))
+                {
+                    SplitChild(Node_x, i, Node_x.children[i]);
+                    if(key.CompareTo(Node_x.elements[i].key) == 1)
+                    {
+                        i++;
+                    }
+                }
+                InsertNonFull(Node_x.children[i], key);
+
+            }
+        }
+
+
+
+
+
+
+        public void DiskWrite(Node<Tkey, TValue> node)
         {
             if (NodeExistsInDisk(node))
             {
@@ -109,6 +195,10 @@ namespace DataStructuresURL_2._0
             {
                 //Pos agregamos uno nuevo
             }
+        }
+        public void DiskRead(Node<Tkey, TValue> node)
+        {
+
         }
 
         public bool NodeExistsInDisk(Node<Tkey, TValue> node)
