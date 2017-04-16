@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataStructuresURL_3._0
 {
-    class Node<TKey, TValue> where TKey : IComparable<TKey>
+    class Node<TKey, TValue> where TKey : IComparable<TKey>, IStringParseable<TKey>
     {
         public long numberOfKeys { get; set; }
         public List<Entry<TKey,TValue>> entries { get; set; }

@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="BTree.cs" />
     <Compile Include="Entry.cs" />
+    <Compile Include="IStringParseable.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="BTreeFormatProvider.cs" />
