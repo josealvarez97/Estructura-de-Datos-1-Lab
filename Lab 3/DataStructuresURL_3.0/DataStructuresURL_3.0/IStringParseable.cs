@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataStructuresURL_3._0
 {
-    interface IStringParseable<T>
+    public interface IStringParseable<T>
     {
 
         string ParseToString(T obj);
