@@ -13,6 +13,8 @@ namespace DataStructuresURL_3._0
         public bool isLeaf { get; set; }
         public List<long> children { get; set; }
         public int minimumDegreeT { get; set; }
+
+        
         
     }
 }

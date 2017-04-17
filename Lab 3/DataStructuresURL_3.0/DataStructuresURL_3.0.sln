@@ -5,6 +5,8 @@ VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataStructuresURL_3.0", "DataStructuresURL_3.0\DataStructuresURL_3.0.csproj", "{19BD9B55-71E3-4115-9DDE-F3E75626F714}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PruebaDeEstres_1.0", "..\PruebaDeEstres_1.0\PruebaDeEstres_1.0\PruebaDeEstres_1.0.csproj", "{BBAFAB8E-B603-4BB3-B896-05128191C4E3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{19BD9B55-71E3-4115-9DDE-F3E75626F714}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19BD9B55-71E3-4115-9DDE-F3E75626F714}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19BD9B55-71E3-4115-9DDE-F3E75626F714}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BBAFAB8E-B603-4BB3-B896-05128191C4E3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBAFAB8E-B603-4BB3-B896-05128191C4E3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBAFAB8E-B603-4BB3-B896-05128191C4E3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBAFAB8E-B603-4BB3-B896-05128191C4E3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
