@@ -29,11 +29,22 @@ namespace PruebaDeEstres_1._0
         {
 
 
-            Guid aGuidObj = Guid.NewGuid();
-            Console.WriteLine(aGuidObj.ToString());
+            //Guid aGuidObj = Guid.NewGuid();
+            //Console.WriteLine(aGuidObj.ToString());
 
 
-            BTree<LlavePrueba, ValorPrueba> tree_1 = new BTree<LlavePrueba, ValorPrueba>(3, "C:/Users/Fed2/Documents/Jose/Github/Estructura-de-Datos-1-Lab/Lab 3/ArbolesCreados.treeFile");
+            //BTree<LlavePrueba, ValorPrueba> tree_1 = new BTree<LlavePrueba, ValorPrueba>(3, "C:/Users/Fed2/Documents/Jose/Github/Estructura-de-Datos-1-Lab/Lab 3/ArbolesCreados.treeFile");
+            BTree<Int, Int> tree_1 = new BTree<Int, Int>(3, "C:/Users/Oscar/Desktop/Laboratorio Estructuras/Estructura-de-Datos-1-Lab/Lab 3/Arboles/Arbol.txt");
+            Int intObj = new Int();
+            intObj.value = 12;
+
+            Entry<Int, Int> entry = new Entry<Int, Int>();
+            entry.key = intObj;
+            entry.value = intObj;
+
+            //tree_1.Create();
+            //tree_1.Insert(entry);
+
             Console.ReadKey();
         }
     }
