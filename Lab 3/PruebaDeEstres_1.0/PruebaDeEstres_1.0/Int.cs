@@ -7,11 +7,15 @@ using DataStructuresURL_3._0;
 
 namespace PruebaDeEstres_1._0
 {
-    class Int : IStringParseable<Int>, IComparable<Int>
+    public class Int : IStringParseable<Int>, IComparable<Int>
     {
 
         public int value { get; set; }
 
+        public Int()
+        {
+            this.value = 0;
+        }
 
         //https://msdn.microsoft.com/es-es/library/4d7sx9hd(v=vs.110).aspx
         int IComparable<Int>.CompareTo(Int other)
@@ -34,5 +38,6 @@ namespace PruebaDeEstres_1._0
         {
             return obj.value.ToString("00000000000");
         }
+
     }
 }

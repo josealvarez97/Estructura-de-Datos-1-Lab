@@ -14,7 +14,13 @@ namespace DataStructuresURL_3._0
         public List<long> children { get; set; }
         public int minimumDegreeT { get; set; }
 
-        
+        public Node()
+        {
+            numberOfKeys = 0;
+            entries = new List<Entry<TKey, TValue>>();
+            children = new List<long>();
+            //minimumDegreeT
+        }
         
     }
 }
