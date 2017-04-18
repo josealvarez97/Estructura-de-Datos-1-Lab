@@ -76,15 +76,15 @@ namespace DataStructuresURL_3._0
             this.height = 0;
 
             //Apuntador a Raiz
-            WriteInFile(treeFile, int.MinValue.ToString() + "\n");
+            WriteInFile(treeFile, int.MinValue.ToString("00000000000") + "\n");
             //Apuntador a Ultima Posicion Vacia
-            WriteInFile(treeFile, int.MinValue.ToString() + "\n");
+            WriteInFile(treeFile, int.MinValue.ToString("00000000000") + "\n");
             //Tamano
-            WriteInFile(treeFile, numberOfNodes.ToString() + "\n");
+            WriteInFile(treeFile, numberOfNodes.ToString("00000000000") + "\n");
             //Orden
-            WriteInFile(treeFile, order.ToString() + "\n");
+            WriteInFile(treeFile, order.ToString("00000000000") + "\n");
             //Altura
-            WriteInFile(treeFile, height.ToString() + "\n");
+            WriteInFile(treeFile, height.ToString("00000000000") + "\n");
 
 
 
