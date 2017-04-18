@@ -54,15 +54,15 @@ namespace DataStructuresURL_3._0
 
         public string ByteStringConverter(byte[] bytes)
         {
-            return Encoding.ASCII.GetString(bytes);
+            return Encoding.UTF8.GetString(bytes);
         }
         public string ByteStringConverter(byte[] bytes, int stringSize)
         {
-            return Encoding.ASCII.GetString(bytes).Substring(0, stringSize);
+            return Encoding.UTF8.GetString(bytes).Substring(0, stringSize);
         }
         public byte[] ByteStringConverter(string anString)
         {
-            return Encoding.ASCII.GetBytes(anString);
+            return Encoding.UTF8.GetBytes(anString);
         }
 
 
@@ -125,6 +125,10 @@ namespace DataStructuresURL_3._0
 
         long AllocateNode()
         {
+            long memoryPositionForNewNode = numberOfNodes;
+            Node<TKey, TValue> dummyNode = new Node<TKey, TValue>();
+            dummyNode.isLeaf = true;
+            DiskWrite(memoryPositionForNewNode, dummyNode);
             return numberOfNodes++;
         }
 
@@ -199,6 +203,7 @@ namespace DataStructuresURL_3._0
                 if (i != (order) - 1)
                     treeFile.Seek(SINGLE_SEPARATOR.Length, SeekOrigin.Current);
             }
+            nodeInRamInfo.isLeaf = nodeInRamInfo.IsLeaf();
 
             // Keys
             treeFile.Seek(BIG_SEPARATOR.Length, SeekOrigin.Current);
@@ -342,6 +347,7 @@ namespace DataStructuresURL_3._0
             Node<TKey, TValue> pivotNode = nodeInRamInfo;
             nodeInRamInfo = nodeInfoToWrite;
             DiskWrite(x);
+            nodeInRamInfo = pivotNode;
         }
 
         void DiskModify(long x)
@@ -456,7 +462,7 @@ namespace DataStructuresURL_3._0
 
 
 
-            return 32 + (order - 1) * 36;
+            return (32 + (order - 1) * 36) + 1 /* + salto de linea*/;
         }
 
 
@@ -496,7 +502,7 @@ namespace DataStructuresURL_3._0
 
 
         }
-
+ 
 
 
         public void Create()
@@ -520,11 +526,13 @@ namespace DataStructuresURL_3._0
             long r = root;
             long pivotNode = nodeInRam;
             DiskRead(r);
-            Node<TKey, TValue> nodeInfo_r = nodeInRamInfo;
+
+            Node<TKey, TValue> nodeInfo_r = new Node<TKey, TValue>();
+            nodeInfo_r = nodeInRamInfo;
             DiskRead(pivotNode);
 
 
-            if (nodeInfo_r.numberOfKeys == 2 * minimumDegreeT - 1)
+            if (nodeInfo_r.numberOfKeys == (2 * minimumDegreeT) - 1)
             {
                 long s = AllocateNode();
                 Node<TKey, TValue> nodeInfo_s = new Node<TKey, TValue>();
@@ -578,19 +586,21 @@ namespace DataStructuresURL_3._0
         }
 
 
-        public void expandList(List<Entry<TKey, TValue>> entriesList, long size)
+        public List<Entry<TKey, TValue>> expandList(List<Entry<TKey, TValue>> entriesList, long size)
         {
             for(int i = 0; entriesList.Count < size; i++)
             {
                 entriesList.Add(new Entry<TKey, TValue>());
             }
+            return entriesList;
         }
-        public void expandList(List<long> childrenList, long size)
+        public List<long> expandList(List<long> childrenList, long size)
         {
             for (int i = 0; childrenList.Count < size; i++)
             {
                 childrenList.Add(int.MinValue);
             }
+            return childrenList;
         }
 
 
@@ -610,10 +620,10 @@ namespace DataStructuresURL_3._0
             nodeInfo_z.numberOfKeys = minimumDegreeT - 1;
 
             //------
-            expandList(nodeInfo_z.entries, order - 1);
-            expandList(nodeInfo_z.children, order);
-            expandList(nodeInfo_X.entries, order - 1);
-            expandList(nodeInfo_X.children, order);
+            nodeInfo_z.entries = expandList(nodeInfo_z.entries, order - 1);
+            nodeInfo_z.children = expandList(nodeInfo_z.children, order);
+            nodeInfo_X.entries = expandList(nodeInfo_X.entries, order - 1);
+            nodeInfo_X.children = expandList(nodeInfo_X.children, order);
 
             //--------
 

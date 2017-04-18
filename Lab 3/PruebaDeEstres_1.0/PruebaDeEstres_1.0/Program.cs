@@ -33,7 +33,7 @@ namespace PruebaDeEstres_1._0
             //Console.WriteLine(aGuidObj.ToString());
 
 
-            BTree<Int, Int> tree_1 = new BTree<Int, Int>(5, "C:/Users/jjaa0/Documents/GitHub/Estructura-de-Datos-1-Lab/Lab 3/Arboles/Arbol.txt");
+            BTree<Int, Int> tree_1 = new BTree<Int, Int>(4, "C:/Users/jjaa0/Documents/GitHub/Estructura-de-Datos-1-Lab/Lab 3/Arboles/Arbol.txt");
             //BTree<Int, Int> tree_1 = new BTree<Int, Int>(3, "C:/Users/Oscar/Desktop/Laboratorio Estructuras/Estructura-de-Datos-1-Lab/Lab 3/Arboles/Arbol.txt");
             Int intObj = new Int();
 

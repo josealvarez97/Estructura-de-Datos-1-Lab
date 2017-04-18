@@ -36,7 +36,11 @@ namespace PruebaDeEstres_1._0
 
         string IStringParseable<Int>.ParseToString(Int obj)
         {
-            return obj.value.ToString("00000000000");
+            if (obj.value != int.MinValue)
+                return obj.value.ToString("00000000000");
+            else
+                return obj.value.ToString();
+
         }
 
     }
