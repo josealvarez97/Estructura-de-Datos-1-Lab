@@ -16,3 +16,8 @@ INTERESANTES LINKS:
 
 Interesante implementacion en c++:
 https://www.codeproject.com/Articles/808055/Introduction-to-B-trees-Concepts-and-Applications
+
+
+Un poco sobre trabajar con Bytes y Encoding en archivos de texto
+http://stackoverflow.com/questions/16072709/converting-string-to-byte-array-in-c-sharp
+https://msdn.microsoft.com/en-us/library/system.io.filestream.read(v=vs.110).aspx
