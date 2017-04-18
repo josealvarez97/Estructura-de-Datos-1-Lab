@@ -33,8 +33,8 @@ namespace PruebaDeEstres_1._0
             //Console.WriteLine(aGuidObj.ToString());
 
 
-            //BTree<LlavePrueba, ValorPrueba> tree_1 = new BTree<LlavePrueba, ValorPrueba>(3, "C:/Users/Fed2/Documents/Jose/Github/Estructura-de-Datos-1-Lab/Lab 3/ArbolesCreados.treeFile");
-            BTree<Int, Int> tree_1 = new BTree<Int, Int>(3, "C:/Users/Oscar/Desktop/Laboratorio Estructuras/Estructura-de-Datos-1-Lab/Lab 3/Arboles/Arbol.txt");
+            BTree<Int, Int> tree_1 = new BTree<Int, Int>(3, "C:/Users/jjaa0/Documents/GitHub/Estructura-de-Datos-1-Lab/Lab 3/Arboles/Arbol.txt");
+            //BTree<Int, Int> tree_1 = new BTree<Int, Int>(3, "C:/Users/Oscar/Desktop/Laboratorio Estructuras/Estructura-de-Datos-1-Lab/Lab 3/Arboles/Arbol.txt");
             Int intObj = new Int();
             intObj.value = 12;
 
@@ -42,10 +42,10 @@ namespace PruebaDeEstres_1._0
             entry.key = intObj;
             entry.value = intObj;
 
-            //tree_1.Create();
-            //tree_1.Insert(entry);
+            tree_1.Create();
+            tree_1.Insert(entry);
 
-            Console.ReadKey();
+            //Console.ReadKey();
         }
     }
 }
