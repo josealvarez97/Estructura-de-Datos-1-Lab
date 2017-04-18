@@ -53,15 +53,15 @@ namespace DataStructuresURL_3._0
 
         public string ByteStringConverter(byte[] bytes)
         {
-            return Encoding.UTF32.GetString(bytes);
+            return Encoding.ASCII.GetString(bytes);
         }
         public string ByteStringConverter(byte[] bytes, int stringSize)
         {
-            return Encoding.UTF32.GetString(bytes).Substring(0, stringSize);
+            return Encoding.ASCII.GetString(bytes).Substring(0, stringSize);
         }
         public byte[] ByteStringConverter(string anString)
         {
-            return Encoding.UTF32.GetBytes(anString);
+            return Encoding.ASCII.GetBytes(anString);
         }
 
 
@@ -354,11 +354,11 @@ namespace DataStructuresURL_3._0
 
         void WriteInFile(FileStream fileToWrite, string Expression)
         {
-            fileToWrite.Write(ByteStringConverter(Expression), 0, Expression.Length);
+            fileToWrite.Write(ByteStringConverter(Expression), 0, ByteStringConverter(Expression).Length);
         }
         void WriteInFile(FileStream fileToWrite, byte[] Expression)
         {
-            fileToWrite.Write(Expression, 0, ByteStringConverter(Expression).Length);
+            fileToWrite.Write(Expression, 0, Expression.Length);
         }
 
 
