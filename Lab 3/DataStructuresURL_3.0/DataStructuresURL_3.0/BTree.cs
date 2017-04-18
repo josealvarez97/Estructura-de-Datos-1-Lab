@@ -24,10 +24,11 @@ namespace DataStructuresURL_3._0
     public class BTree<TKey, TValue> where TKey : IComparable<TKey>, IStringParseable<TKey> where TValue : IStringParseable<TValue>
     {
         // Constantes
-        const string DEFAULT_SEPARATOR = "00000000000";
+        const string DEFAULT_FORMAT = "00000000000";
         const string SINGLE_SEPARATOR = "|";
         const string BIG_SEPARATOR = "||||";
-        const int FIELD_LENGTH = 12; //Contando los pipes |
+        const int FIELD_LENGTH_PIPES = 12; //Contando los pipes |
+        const int FIELD_LENGTH_CHARS = 11; //Contando los caracteres
 
 
         // Info en RAM del Arbol
@@ -47,8 +48,8 @@ namespace DataStructuresURL_3._0
 
         // Manejador del archivo
         FileStream treeFile;
-        //TKey aKeyObj; // (This obj is only used for calling the methods from the IStringParseable<T> interface). Found a better solution... default(Tkey)
-        //TValue aValueObj; // (This obj is only used for calling the methods from the IStringParseable<T> interface). Found a better solution... default(TValue)
+        TKey keyToAdd; // (This obj is only used for calling the methods from the IStringParseable<T> interface). Found a better solution... default(Tkey)
+        TValue valueToAdd; // (This obj is only used for calling the methods from the IStringParseable<T> interface). Found a better solution... default(TValue)
 
 
         public string ByteStringConverter(byte[] bytes)
@@ -65,7 +66,7 @@ namespace DataStructuresURL_3._0
         }
 
 
-        public BTree(int order)
+        public BTree(int order) //MALO
         {
             nodeInRamInfo = new Node<TKey, TValue>();
             treeDiskPath = "~/TreeFolder/BTree.txt";
@@ -98,17 +99,24 @@ namespace DataStructuresURL_3._0
             this.minimumDegreeT = order / 2;
             this.numberOfNodes = 0;
             this.height = 0;
+            //Estos no salvaron :v con instanciar tkey
+            //http://stackoverflow.com/questions/6410340/generics-in-c-sharp-how-can-i-create-an-instance-of-a-variable-type-with-an-ar
+            //keyToAdd = (TKey)Activator.CreateInstance(typeof(TKey), new object[] { null, null });
+
+            //http://stackoverflow.com/questions/752/get-a-new-object-instance-from-a-type
+            keyToAdd = (TKey)Activator.CreateInstance(typeof(TKey)/*, new object()*/);
+            valueToAdd = (TValue)Activator.CreateInstance(typeof(TValue));
 
             //Apuntador a Raiz
             WriteInFile(treeFile, int.MinValue.ToString() + "\n");
             //Apuntador a Ultima Posicion Vacia
             WriteInFile(treeFile, int.MinValue.ToString() + "\n");
             //Tamano
-            WriteInFile(treeFile, numberOfNodes.ToString() + "\n");
+            WriteInFile(treeFile, numberOfNodes.ToString(DEFAULT_FORMAT) + "\n");
             //Orden
-            WriteInFile(treeFile, order.ToString() + "\n");
+            WriteInFile(treeFile, order.ToString(DEFAULT_FORMAT) + "\n");
             //Altura
-            WriteInFile(treeFile, height.ToString() + "\n");
+            WriteInFile(treeFile, height.ToString(DEFAULT_FORMAT) + "\n");
 
 
 
@@ -122,40 +130,51 @@ namespace DataStructuresURL_3._0
 
         void DiskRead(long x)
         {
+            /*
+             * quiero saltar con begin... quiero saltar pipes... hay 12 pipes en cada field de encabezado ¿no? (quien lea esto cuente :v)
+             * 
+             * pero..... si se va a mover con current... piense que son cantidad de desplazamientos a la derecha. quiere moverse 11 caracteres, no use la constante 
+             * 
+             * de pipes porque esa es 12! Use la de chars... y eso.
+             * 
+             * al final la de pipes solo sirvio para calculos en el encabezado...
+             */
+
             // SE ACTUALIZA EL APUNTADOR DEL NODO EN RAM
             nodeInRam = x;
 
-            byte[] fileInBytes = new byte[FIELD_LENGTH - 2];
+            byte[] fileInBytes = new byte[FIELD_LENGTH_CHARS];
 
             // UPDATE HEADER
             // Apuntador a Raiz
-            treeFile.Seek(FIELD_LENGTH * 0, SeekOrigin.Begin);
-            treeFile.Read(fileInBytes, 0, FIELD_LENGTH);
+            treeFile.Seek(FIELD_LENGTH_PIPES * 0, SeekOrigin.Begin);
+            treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
             root = long.Parse(ByteStringConverter(fileInBytes));
 
             // Apuntador a ultima posicion vacia, no se actualiza en RAM
-            treeFile.Seek(FIELD_LENGTH * 1, SeekOrigin.Begin);
+            treeFile.Seek(FIELD_LENGTH_PIPES * 1, SeekOrigin.Begin);
             //aqui corresponderia actualizar ultima posicion vacia
 
             // Tamano
-            treeFile.Seek(FIELD_LENGTH * 2, SeekOrigin.Begin);
+            treeFile.Seek(FIELD_LENGTH_PIPES * 2, SeekOrigin.Begin);
 
-            treeFile.Read(fileInBytes, 0, FIELD_LENGTH);
+            treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
             numberOfNodes = long.Parse(ByteStringConverter(fileInBytes));
 
             // Orden
-            treeFile.Seek(FIELD_LENGTH * 3, SeekOrigin.Begin);
-            treeFile.Read(fileInBytes, 0, FIELD_LENGTH);
+            treeFile.Seek(FIELD_LENGTH_PIPES * 3, SeekOrigin.Begin);
+            treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
             order = long.Parse(ByteStringConverter(fileInBytes));
 
             // Altura
-            treeFile.Seek(FIELD_LENGTH * 4, SeekOrigin.Begin);
-            treeFile.Read(fileInBytes, 0, FIELD_LENGTH);
+            treeFile.Seek(FIELD_LENGTH_PIPES * 4, SeekOrigin.Begin);
+            treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
             height = long.Parse(ByteStringConverter(fileInBytes));
 
+            UpdateFileHeader();
 
             //UPDATE NODE IN RAM
-            int headerSize = FIELD_LENGTH * 5;
+            int headerSize = FIELD_LENGTH_PIPES * 5;
 
             long lineSize = CalculateLineSize();
 
@@ -167,36 +186,37 @@ namespace DataStructuresURL_3._0
             // nodeInfo.Posicion padre <- actualizar
 
 
-            treeFile.Seek(FIELD_LENGTH, SeekOrigin.Current);
+            treeFile.Seek(FIELD_LENGTH_CHARS, SeekOrigin.Current);
             // Children
             treeFile.Seek(BIG_SEPARATOR.Length, SeekOrigin.Current); //"Read te mueve"...
             nodeInRamInfo.children.Clear();
-            for (int i = 0; i < (2 * minimumDegreeT); i++)
+            for (int i = 0; i < (order); i++)
             {
-                treeFile.Read(fileInBytes, 0, FIELD_LENGTH);
+                treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
                 long childPointer = long.Parse(ByteStringConverter(fileInBytes));
                 nodeInRamInfo.children.Add(childPointer);
 
-                if (i != (2 * minimumDegreeT) - 1)
+                if (i != (order) - 1)
                     treeFile.Seek(SINGLE_SEPARATOR.Length, SeekOrigin.Current);
             }
 
             // Keys
             treeFile.Seek(BIG_SEPARATOR.Length, SeekOrigin.Current);
             nodeInRamInfo.entries.Clear();
-            for (int i = 0; i < (2 * minimumDegreeT - 1); i++)
+            for (int i = 0; i < (order - 1); i++)
             {
                 // Leemos una key
-                treeFile.Read(fileInBytes, 0, FIELD_LENGTH);
+                treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
                 //Convertimos la key leida
-                TKey keyToAdd = default(TKey);
+
+
                 keyToAdd = keyToAdd.ParseToObjectType(ByteStringConverter(fileInBytes));
 
 
                 nodeInRamInfo.entries.Add(new Entry<TKey, TValue>());
                 nodeInRamInfo.entries[i].key = keyToAdd;
 
-                if (i != (2 * minimumDegreeT - 1) - 1)
+                if (i != (order - 1) - 1)
                     treeFile.Seek(SINGLE_SEPARATOR.Length, SeekOrigin.Current);
 
 
@@ -228,19 +248,19 @@ namespace DataStructuresURL_3._0
             // Values
             treeFile.Seek(BIG_SEPARATOR.Length, SeekOrigin.Current);
 
-            for (int i = 0; i < (2 * minimumDegreeT - 1); i++)
+            for (int i = 0; i < (order - 1); i++)
             {
                 //Leemos un vlaue
-                treeFile.Read(fileInBytes, 0, FIELD_LENGTH);
+                treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
                 //Convertimos el value leido
-                TValue valueToAdd = default(TValue);
+                //TValue valueToAdd = default(TValue);
                 valueToAdd = valueToAdd.ParseToObjectType(ByteStringConverter(fileInBytes));
 
                 nodeInRamInfo.entries[i].value = valueToAdd;
 
 
 
-                if (i != (2 * minimumDegreeT - 1) - 1) //Para mantener las cosas estandarizadas se dejara esta condicion.. que se hubiera podido obviar no escribir mas codigo para saltar el ultimo pipe de la linea...
+                if (i != (order - 1) - 1) //Para mantener las cosas estandarizadas se dejara esta condicion.. que se hubiera podido obviar no escribir mas codigo para saltar el ultimo pipe de la linea...
                     treeFile.Seek(SINGLE_SEPARATOR.Length, SeekOrigin.Current);
             }
 
@@ -265,38 +285,55 @@ namespace DataStructuresURL_3._0
         void DiskWrite(long x)
         {
             //El cursor debe estar siempre en la posicion donde se va a escribir...
-            int headerSize = FIELD_LENGTH * 5;
+            int headerSize = FIELD_LENGTH_PIPES * 5;
             long lineSize = CalculateLineSize();
             long currentFreePosition = headerSize + lineSize * x;
             treeFile.Seek(currentFreePosition, SeekOrigin.Begin);
 
             // POSITION / POINTERS
-            WriteInFile(treeFile, x.ToString(DEFAULT_SEPARATOR));
-            WriteInFile(treeFile, SINGLE_SEPARATOR);
+            WriteInFile(treeFile, x.ToString(DEFAULT_FORMAT));
+            //WriteInFile(treeFile, SINGLE_SEPARATOR);
             // POINTERS TO FATHER'S
             //WriteInFile(treeFile, "PosicionPadre");
-            //WriteInFile(treeFile, BIG_SEPARATOR);
+            WriteInFile(treeFile, BIG_SEPARATOR);
             // POINTERS TO CHILDREN
-            for (int i = 0; i < (2 * minimumDegreeT); i++)
+            for (int i = 0; i < order; i++)
             {
                 if (!nodeInRamInfo.isLeaf)
-                    WriteInFile(treeFile, nodeInRamInfo.children[i].ToString(DEFAULT_SEPARATOR));
+                    WriteInFile(treeFile, nodeInRamInfo.children[i].ToString(DEFAULT_FORMAT));
                 else
                     WriteInFile(treeFile, int.MinValue.ToString());
+
+                if (i != (order) - 1)
+                    WriteInFile(treeFile, SINGLE_SEPARATOR);
+
             }
             WriteInFile(treeFile, BIG_SEPARATOR);
             // KEYS
-            for (int i = 0; i < nodeInRamInfo.numberOfKeys; i++)
+            for (int i = 0; i < order - 1; i++)
             {
-                WriteInFile(treeFile, nodeInRamInfo.entries[i].key.ToString().ToString(new BTreeFormatProvider()));
+                if (i < nodeInRamInfo.numberOfKeys)
+                    WriteInFile(treeFile, keyToAdd.ParseToString(nodeInRamInfo.entries[i].key));
+                else
+                    WriteInFile(treeFile, int.MinValue.ToString());
+
+
+                if (i != (order - 1) - 1)
+                    WriteInFile(treeFile, SINGLE_SEPARATOR);
             }
             WriteInFile(treeFile, BIG_SEPARATOR);
             // VALUES
-            for (int i = 0; i < nodeInRamInfo.numberOfKeys; i++)
+            for (int i = 0; i < order - 1; i++)
             {
-                WriteInFile(treeFile, nodeInRamInfo.entries[i].value.ToString().ToString(new BTreeFormatProvider()));
+                if (i < nodeInRamInfo.numberOfKeys)
+                    WriteInFile(treeFile, valueToAdd.ParseToString(nodeInRamInfo.entries[i].value));
+                else
+                    WriteInFile(treeFile, int.MinValue.ToString());
+
+                if (i != (order - 1) - 1)
+                    WriteInFile(treeFile, SINGLE_SEPARATOR);
             }
-            WriteInFile(treeFile, BIG_SEPARATOR + "\n");
+            WriteInFile(treeFile, "\n");
         }
 
 
@@ -306,7 +343,7 @@ namespace DataStructuresURL_3._0
             nodeInRamInfo = nodeInfoToWrite;
             DiskWrite(x);
         }
-        
+
         void DiskModify(long x)
         {
             // Por fines practicos se utilizara disk write siempre... si no existe se escribira algo nuevo, si se modifico se sobre escribira completo
@@ -365,87 +402,89 @@ namespace DataStructuresURL_3._0
 
         long CalculateLineSize()
         {
-            long lineSize = 0;
+            //long lineSize = 0;
 
-            // Sum Pointer / Position
-            lineSize += FIELD_LENGTH;
-            // SumPipe
-            lineSize++;
-            // SumFatherPosition
-            //lineSize += FIELD_LENGTH;
-            //// Sum pipe
+            //// Sum Pointer / Position
+            //lineSize += FIELD_LENGTH_PIPES;
+            //// SumPipe
+            //lineSize++;
+            //// SumFatherPosition
+            ////lineSize += FIELD_LENGTH;
+            ////// Sum pipe
+            ////lineSize++;
+
+
+            //// Sum 2 pipes
+            //lineSize += 2;
+
+
+            //// SumChildren
+            //for (int i = 0; i < 2 * minimumDegreeT; i++)
+            //{
+            //    lineSize++;
+            //    lineSize += FIELD_LENGTH_PIPES;
+            //}
+            //// Sum Pipe
             //lineSize++;
 
 
-            // Sum 2 pipes
-            lineSize += 2;
+            //// Sum 2 pipes
+            //lineSize += 2;
 
 
-            // SumChildren
-            for (int i = 0; i < 2 * minimumDegreeT; i++)
-            {
-                lineSize++;
-                lineSize += FIELD_LENGTH;
-            }
-            // Sum Pipe
-            lineSize++;
+            //// Sum Keys
+            //for (int i = 0; i < (2 * minimumDegreeT - 1); i++)
+            //{
+            //    lineSize++;
+            //    lineSize += FIELD_LENGTH_PIPES;
+            //}
+            ////Sum Pipe
+            //lineSize++;
 
 
-            // Sum 2 pipes
-            lineSize += 2;
+            //// Sum 2 pipes
+            //lineSize += 2;
 
-
-            // Sum Keys
-            for (int i = 0; i < (2 * minimumDegreeT - 1); i++)
-            {
-                lineSize++;
-                lineSize += FIELD_LENGTH;
-            }
-            //Sum Pipe
-            lineSize++;
-
-
-            // Sum 2 pipes
-            lineSize += 2;
-
-            // Sum Values
-            for (int i = 0; i < (2 * minimumDegreeT - 1); i++)
-            {
-                lineSize++;
-                lineSize += FIELD_LENGTH;
-            }
-            //Sum Pipe
-            lineSize++;
+            //// Sum Values
+            //for (int i = 0; i < (2 * minimumDegreeT - 1); i++)
+            //{
+            //    lineSize++;
+            //    lineSize += FIELD_LENGTH_PIPES;
+            //}
+            ////Sum Pipe
+            //lineSize++;
 
 
 
-            return lineSize;
+            return 32 + (order - 1) * 36;
         }
 
 
 
 
+
+
         // ------------------------------------------------------------------------------------------------------------------------
-        
+
         //void BTreeCreate()
         //{
 
         //}
-        
+
         TKey Search(long x, TKey key)
         {
             long i = 0;
-            while(i < nodeInRamInfo.numberOfKeys
+            while (i < nodeInRamInfo.numberOfKeys
                 && key.CompareTo(nodeInRamInfo.entries[(int)i].key) == 1)
             {
                 i++;
             }
-            if(i < nodeInRamInfo.numberOfKeys 
+            if (i < nodeInRamInfo.numberOfKeys
                 && key.Equals(nodeInRamInfo.entries[(int)i].key))
             {
                 return nodeInRamInfo.entries[(int)i].key;
             }
-            if(nodeInRamInfo.isLeaf)
+            if (nodeInRamInfo.isLeaf)
             {
                 return default(TKey); //Como hacer que esto sea null...
             }
@@ -455,7 +494,7 @@ namespace DataStructuresURL_3._0
                 return Search(nodeInRamInfo.children[(int)i], key);
             }
 
-            
+
         }
 
 
@@ -467,10 +506,11 @@ namespace DataStructuresURL_3._0
             nodeInRamInfo.numberOfKeys = 0;
             root = nodeInRam;
             DiskWrite(nodeInRam); // will write a lot of not usefull information, but that's how it is meant to be...
+            UpdateFileHeader();
         }
 
 
-        
+
         public void Insert(FileStream Tree, TKey key)
         {
 
@@ -484,14 +524,14 @@ namespace DataStructuresURL_3._0
             DiskRead(pivotNode);
 
 
-            if (nodeInfo_r.numberOfKeys == 2*minimumDegreeT - 1)
+            if (nodeInfo_r.numberOfKeys == 2 * minimumDegreeT - 1)
             {
                 long s = AllocateNode();
                 Node<TKey, TValue> nodeInfo_s = new Node<TKey, TValue>();
                 root = s;
                 nodeInfo_s.isLeaf = false;
                 nodeInfo_s.numberOfKeys = 0;
-                nodeInfo_s.children[0] = r;
+                nodeInfo_s.children.Add(r);//nodeInfo_s.children[0] = r;
                 SplitChild(s, nodeInfo_s, 0, r, nodeInfo_r);
                 InsertNonFull(s, nodeInfo_s, entry);
             }
@@ -499,32 +539,33 @@ namespace DataStructuresURL_3._0
             {
                 InsertNonFull(r, nodeInfo_r, entry);
             }
+            UpdateFileHeader();
         }
 
         void InsertNonFull(long x, Node<TKey, TValue> xInfo, Entry<TKey, TValue> entry)
         {
 
             long i = xInfo.numberOfKeys;
-            if(xInfo.isLeaf)
+            if (xInfo.isLeaf)
             {
-                while(i >= 0 && 
+                while (i >= 0 &&
                     entry.key.CompareTo(xInfo.entries[(int)i].key) == -1)
                 {
                     xInfo.entries[(int)i + 1] = xInfo.entries[(int)i];
                     i--;
                 }
-                xInfo.entries[(int)i + 1] = entry;
+                xInfo.entries[(int)i/* + 1*/] = entry;
                 xInfo.numberOfKeys++;
                 DiskWrite(x, xInfo);
             }
             else
             {
-                while(i >= 0
+                while (i >= 0
                     && entry.key.CompareTo(xInfo.entries[(int)i].key) == -1)
                 {
                     i--;
                 }
-                i++;
+                //i++;
                 DiskRead(xInfo.children[(int)i]); // WE READ THE CHILDREN HERE INTO MAIN MEMORY
                 if (nodeInRamInfo.numberOfKeys == 2 * minimumDegreeT - 1)
                 {
@@ -537,7 +578,20 @@ namespace DataStructuresURL_3._0
         }
 
 
-
+        public void expandList(List<Entry<TKey, TValue>> entriesList, long size)
+        {
+            for(int i = 0; entriesList.Count < size; i++)
+            {
+                entriesList.Add(new Entry<TKey, TValue>());
+            }
+        }
+        public void expandList(List<long> childrenList, long size)
+        {
+            for (int i = 0; childrenList.Count < size; i++)
+            {
+                childrenList.Add(int.MinValue);
+            }
+        }
 
 
 
@@ -554,24 +608,35 @@ namespace DataStructuresURL_3._0
             Node<TKey, TValue> nodeInfo_z = new Node<TKey, TValue>();
             nodeInfo_z.isLeaf = nodeInfo_y.isLeaf;
             nodeInfo_z.numberOfKeys = minimumDegreeT - 1;
+
+            //------
+            expandList(nodeInfo_z.entries, order - 1);
+            expandList(nodeInfo_z.children, order);
+            expandList(nodeInfo_X.entries, order - 1);
+            expandList(nodeInfo_X.children, order);
+
+            //--------
+
+
             for (long j = 0; j < minimumDegreeT - 1; j++)
             {
+                //nodeInfo_z.entries.Add(new Entry<TKey, TValue>());//truco sucio...ntt no es sucio, es shuquisimo
                 nodeInfo_z.entries[(int)j] = nodeInfo_y.entries[(int)j + (int)minimumDegreeT];
             }
-            if(!nodeInfo_y.isLeaf)
+            if (!nodeInfo_y.isLeaf)
             {
                 for (long j = 0; j < minimumDegreeT; j++)
                 {
-                    nodeInfo_z.children[(int)j] = nodeInfo_y.children[(int)j + (int)minimumDegreeT]; 
+                    nodeInfo_z.children[(int)j] = nodeInfo_y.children[(int)j + (int)minimumDegreeT];
                 }
             }
             nodeInfo_y.numberOfKeys = minimumDegreeT - 1;
-            for(long j = nodeInfo_X.numberOfKeys + 1; j == i +1; j--)
+            for (long j = nodeInfo_X.numberOfKeys /*+ 1*/; j == i + 1; j--)
             {
                 nodeInfo_X.children[(int)j + 1] = nodeInfo_X.children[(int)j];
             }
             nodeInfo_X.children[(int)i + 1] = z;
-            for(long j = nodeInfo_X.numberOfKeys; j == i; j--)
+            for (long j = nodeInfo_X.numberOfKeys; j == i; j--)
             {
                 nodeInfo_X.entries[(int)j + 1] = nodeInfo_X.entries[(int)j];
             }
@@ -590,7 +655,35 @@ namespace DataStructuresURL_3._0
 
 
 
+        void UpdateFileHeader()
+        {
+            // UPDATE HEADER EN FILE
+            // Apuntador a Raiz
+            treeFile.Seek(FIELD_LENGTH_PIPES * 0, SeekOrigin.Begin);
+            WriteInFile(treeFile, root.ToString(DEFAULT_FORMAT));
 
+
+            // Apuntador a ultima posicion vacia, no se actualiza en RAM
+            treeFile.Seek(FIELD_LENGTH_PIPES * 1, SeekOrigin.Begin);
+            //aqui corresponderia actualizar ultima posicion vacia
+
+            // Tamano
+            treeFile.Seek(FIELD_LENGTH_PIPES * 2, SeekOrigin.Begin);
+
+
+
+            WriteInFile(treeFile, numberOfNodes.ToString(DEFAULT_FORMAT));
+
+
+            // Orden
+            treeFile.Seek(FIELD_LENGTH_PIPES * 3, SeekOrigin.Begin);
+            WriteInFile(treeFile, order.ToString(DEFAULT_FORMAT));
+
+
+            // Altura
+            treeFile.Seek(FIELD_LENGTH_PIPES * 4, SeekOrigin.Begin);
+            WriteInFile(treeFile, height.ToString(DEFAULT_FORMAT));
+        }
 
     }
 }

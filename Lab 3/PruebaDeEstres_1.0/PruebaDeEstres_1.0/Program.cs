@@ -33,17 +33,32 @@ namespace PruebaDeEstres_1._0
             //Console.WriteLine(aGuidObj.ToString());
 
 
-            BTree<Int, Int> tree_1 = new BTree<Int, Int>(3, "C:/Users/jjaa0/Documents/GitHub/Estructura-de-Datos-1-Lab/Lab 3/Arboles/Arbol.txt");
+            BTree<Int, Int> tree_1 = new BTree<Int, Int>(5, "C:/Users/jjaa0/Documents/GitHub/Estructura-de-Datos-1-Lab/Lab 3/Arboles/Arbol.txt");
             //BTree<Int, Int> tree_1 = new BTree<Int, Int>(3, "C:/Users/Oscar/Desktop/Laboratorio Estructuras/Estructura-de-Datos-1-Lab/Lab 3/Arboles/Arbol.txt");
             Int intObj = new Int();
-            intObj.value = 12;
 
-            Entry<Int, Int> entry = new Entry<Int, Int>();
-            entry.key = intObj;
-            entry.value = intObj;
+            //intObj.value = 12;
+
+            //Entry<Int, Int> entry = new Entry<Int, Int>();
+            //entry.key = intObj;
+            //entry.value = intObj;
+
+
+            //tree_1.Insert(entry);
+
+            //intObj.value = 5;
+            //tree_1.Insert(entry);
+
 
             tree_1.Create();
-            tree_1.Insert(entry);
+
+            for (int i = 0; i < 20; i++)
+            {
+
+                tree_1.Insert(new Entry<Int, Int>(i.ToString(), i.ToString()));
+
+            }
+
 
             //Console.ReadKey();
         }
