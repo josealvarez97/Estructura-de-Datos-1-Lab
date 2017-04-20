@@ -9,6 +9,30 @@ namespace PruebaDeEstres_1._0
 {
     class ValorPrueba : IStringParseable<ValorPrueba>
     {
+        string IStringParseable<ValorPrueba>.DEFAULT_FORMAT_
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        string IStringParseable<ValorPrueba>.DEFAULT_MIN_VAL_FORMAT
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        int IStringParseable<ValorPrueba>.objectLength
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         ValorPrueba IStringParseable<ValorPrueba>.ParseToObjectType(string str)
         {
             throw new NotImplementedException();
