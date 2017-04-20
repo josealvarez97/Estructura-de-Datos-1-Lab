@@ -12,6 +12,30 @@ namespace PruebaDeEstres_1._0
 
         public int value { get; set; }
 
+        public int objectLength
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string DEFAULT_FORMAT_
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string DEFAULT_MIN_VAL_FORMAT
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public Int()
         {
             this.value = 0;
