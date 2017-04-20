@@ -23,6 +23,31 @@ namespace DataStructuresURL_3._0
             //minimumDegreeT
         }
 
+        public Node(Node<TKey, TValue> node)
+        {
+            this.numberOfKeys = node.numberOfKeys;
+            TKey keyObj = (TKey) Activator.CreateInstance(typeof(TKey));
+            TValue valueObj = (TValue)Activator.CreateInstance(typeof(TValue));
+
+
+            this.entries = new List<Entry<TKey, TValue>>();
+            this.children = new List<long>();
+
+            for (int i = 0; i < node.entries.Count; i++)
+            {
+                //Entry<TKey, TValue> newEntry = (Entry<TKey, TValue>) Activator.CreateInstance(typeof(Entry<TKey, TValue>), node.entries[i]);
+                string keyToAdd = keyObj.ParseToString(node.entries[i].key);
+                string valueToAdd = valueObj.ParseToString(node.entries[i].value);
+                this.entries.Add(new Entry<TKey, TValue>(keyToAdd, valueToAdd));
+            }
+            for (int i = 0; i < node.children.Count; i++)
+            {
+                this.children.Add(node.children[i]);
+            }
+            this.isLeaf = node.isLeaf;
+            this.minimumDegreeT = node.minimumDegreeT;
+        }
+
         public bool IsLeaf()
         {
             bool leaf = true;
