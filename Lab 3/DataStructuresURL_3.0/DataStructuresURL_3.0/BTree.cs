@@ -47,77 +47,83 @@ namespace DataStructuresURL_3._0
 
 
         // Manejador del archivo
-        FileStream treeFile;
+        //FileStream treeFile;
         TKey keyToAdd; // (This obj is only used for calling the methods from the IStringParseable<T> interface). Found a better solution... default(Tkey)
         TValue valueToAdd; // (This obj is only used for calling the methods from the IStringParseable<T> interface). Found a better solution... default(TValue)
 
 
         public string ByteStringConverter(byte[] bytes)
         {
-            return Encoding.UTF8.GetString(bytes);
+            return Encoding.ASCII.GetString(bytes);
         }
         public string ByteStringConverter(byte[] bytes, int stringSize)
         {
-            return Encoding.UTF8.GetString(bytes).Substring(0, stringSize);
+            return Encoding.ASCII.GetString(bytes).Substring(0, stringSize);
         }
         public byte[] ByteStringConverter(string anString)
         {
-            return Encoding.UTF8.GetBytes(anString);
+            byte[] bytes = Encoding.ASCII.GetBytes(anString);
+            return bytes;
         }
 
 
         public BTree(int order) //MALO
         {
-            nodeInRamInfo = new Node<TKey, TValue>();
-            treeDiskPath = "~/TreeFolder/BTree.txt";
-            treeFile = File.Create(treeDiskPath);
-            this.order = order;
-            this.minimumDegreeT = order / 2;
-            this.numberOfNodes = 0;
-            this.height = 0;
+            //    nodeInRamInfo = new Node<TKey, TValue>();
+            //    treeDiskPath = "~/TreeFolder/BTree.txt";
+            //    treeFile = File.Create(treeDiskPath);
+            //    this.order = order;
+            //    this.minimumDegreeT = order / 2;
+            //    this.numberOfNodes = 0;
+            //    this.height = 0;
 
-            //Apuntador a Raiz
-            WriteInFile(treeFile, int.MinValue.ToString("00000000000") + "\n");
-            //Apuntador a Ultima Posicion Vacia
-            WriteInFile(treeFile, int.MinValue.ToString("00000000000") + "\n");
-            //Tamano
-            WriteInFile(treeFile, numberOfNodes.ToString("00000000000") + "\n");
-            //Orden
-            WriteInFile(treeFile, order.ToString("00000000000") + "\n");
-            //Altura
-            WriteInFile(treeFile, height.ToString("00000000000") + "\n");
+            //    //Apuntador a Raiz
+            //    WriteInFile(treeFile, int.MinValue.ToString("00000000000") + "\n");
+            //    //Apuntador a Ultima Posicion Vacia
+            //    WriteInFile(treeFile, int.MinValue.ToString("00000000000") + "\n");
+            //    //Tamano
+            //    WriteInFile(treeFile, numberOfNodes.ToString("00000000000") + "\n");
+            //    //Orden
+            //    WriteInFile(treeFile, order.ToString("00000000000") + "\n");
+            //    //Altura
+            //    WriteInFile(treeFile, height.ToString("00000000000") + "\n");
 
 
 
         }
         public BTree(int order, string diskPathForTree)
         {
-            nodeInRamInfo = new Node<TKey, TValue>();
             treeDiskPath = diskPathForTree;
-            treeFile = File.Create(treeDiskPath);
-            this.order = order;
-            this.minimumDegreeT = order / 2;
-            this.numberOfNodes = 0;
-            this.height = 0;
-            //Estos no salvaron :v con instanciar tkey
-            //http://stackoverflow.com/questions/6410340/generics-in-c-sharp-how-can-i-create-an-instance-of-a-variable-type-with-an-ar
-            //keyToAdd = (TKey)Activator.CreateInstance(typeof(TKey), new object[] { null, null });
+            using (FileStream treeFile = new FileStream(treeDiskPath, FileMode.Create, FileAccess.ReadWrite))
+            {
+                nodeInRamInfo = new Node<TKey, TValue>();
 
-            //http://stackoverflow.com/questions/752/get-a-new-object-instance-from-a-type
-            keyToAdd = (TKey)Activator.CreateInstance(typeof(TKey)/*, new object()*/);
-            valueToAdd = (TValue)Activator.CreateInstance(typeof(TValue));
+                this.order = order;
+                this.minimumDegreeT = order / 2;
+                this.numberOfNodes = 0;
+                this.height = 0;
+                //Estos no salvaron :v con instanciar tkey
+                //http://stackoverflow.com/questions/6410340/generics-in-c-sharp-how-can-i-create-an-instance-of-a-variable-type-with-an-ar
+                //keyToAdd = (TKey)Activator.CreateInstance(typeof(TKey), new object[] { null, null });
 
-            //Apuntador a Raiz
-            WriteInFile(treeFile, int.MinValue.ToString() + "\n");
-            //Apuntador a Ultima Posicion Vacia
-            WriteInFile(treeFile, int.MinValue.ToString() + "\n");
-            //Tamano
-            WriteInFile(treeFile, numberOfNodes.ToString(DEFAULT_FORMAT) + "\n");
-            //Orden
-            WriteInFile(treeFile, order.ToString(DEFAULT_FORMAT) + "\n");
-            //Altura
-            WriteInFile(treeFile, height.ToString(DEFAULT_FORMAT) + "\n");
+                //http://stackoverflow.com/questions/752/get-a-new-object-instance-from-a-type
+                keyToAdd = (TKey)Activator.CreateInstance(typeof(TKey)/*, new object()*/);
+                valueToAdd = (TValue)Activator.CreateInstance(typeof(TValue));
 
+                //Apuntador a Raiz
+                WriteInFile(treeFile, int.MinValue.ToString() + "\n");
+                //Apuntador a Ultima Posicion Vacia
+                WriteInFile(treeFile, int.MinValue.ToString() + "\n");
+                //Tamano
+                WriteInFile(treeFile, numberOfNodes.ToString(DEFAULT_FORMAT) + "\n");
+                //Orden
+                WriteInFile(treeFile, order.ToString(DEFAULT_FORMAT) + "\n");
+                //Altura
+                WriteInFile(treeFile, height.ToString(DEFAULT_FORMAT) + "\n");
+
+ 
+
+            }
 
 
         }
@@ -134,145 +140,155 @@ namespace DataStructuresURL_3._0
 
         void DiskRead(long x)
         {
-            /*
-             * quiero saltar con begin... quiero saltar pipes... hay 12 pipes en cada field de encabezado ¿no? (quien lea esto cuente :v)
-             * 
-             * pero..... si se va a mover con current... piense que son cantidad de desplazamientos a la derecha. quiere moverse 11 caracteres, no use la constante 
-             * 
-             * de pipes porque esa es 12! Use la de chars... y eso.
-             * 
-             * al final la de pipes solo sirvio para calculos en el encabezado...
-             */
-
-            // SE ACTUALIZA EL APUNTADOR DEL NODO EN RAM
-            nodeInRam = x;
-
-            byte[] fileInBytes = new byte[FIELD_LENGTH_CHARS];
-
-            // UPDATE HEADER
-            // Apuntador a Raiz
-            treeFile.Seek(FIELD_LENGTH_PIPES * 0, SeekOrigin.Begin);
-            treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
-            root = long.Parse(ByteStringConverter(fileInBytes));
-
-            // Apuntador a ultima posicion vacia, no se actualiza en RAM
-            treeFile.Seek(FIELD_LENGTH_PIPES * 1, SeekOrigin.Begin);
-            //aqui corresponderia actualizar ultima posicion vacia
-
-            // Tamano
-            treeFile.Seek(FIELD_LENGTH_PIPES * 2, SeekOrigin.Begin);
-
-            treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
-            numberOfNodes = long.Parse(ByteStringConverter(fileInBytes));
-
-            // Orden
-            treeFile.Seek(FIELD_LENGTH_PIPES * 3, SeekOrigin.Begin);
-            treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
-            order = long.Parse(ByteStringConverter(fileInBytes));
-
-            // Altura
-            treeFile.Seek(FIELD_LENGTH_PIPES * 4, SeekOrigin.Begin);
-            treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
-            height = long.Parse(ByteStringConverter(fileInBytes));
-
-            UpdateFileHeader();
-
-            //UPDATE NODE IN RAM
-            int headerSize = FIELD_LENGTH_PIPES * 5;
-
-            long lineSize = CalculateLineSize();
-
-            long PositionToSeekInBytes = headerSize + x * lineSize;
-            treeFile.Seek(PositionToSeekInBytes, SeekOrigin.Begin);
-
-            // Father Position
-            //treeFile.Seek(FIELD_LENGTH * 1 + SINGLE_SEPARATOR.Length, SeekOrigin.Current);
-            // nodeInfo.Posicion padre <- actualizar
-
-
-            treeFile.Seek(FIELD_LENGTH_CHARS, SeekOrigin.Current);
-            // Children
-            treeFile.Seek(BIG_SEPARATOR.Length, SeekOrigin.Current); //"Read te mueve"...
-            nodeInRamInfo.children.Clear();
-            for (int i = 0; i < (order); i++)
+            using (FileStream treeFile = new FileStream(treeDiskPath, FileMode.Open, FileAccess.ReadWrite))
             {
-                treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
-                long childPointer = long.Parse(ByteStringConverter(fileInBytes));
-                nodeInRamInfo.children.Add(childPointer);
-
-                if (i != (order) - 1)
-                    treeFile.Seek(SINGLE_SEPARATOR.Length, SeekOrigin.Current);
-            }
-            nodeInRamInfo.isLeaf = nodeInRamInfo.IsLeaf();
-
-            // Keys
-            treeFile.Seek(BIG_SEPARATOR.Length, SeekOrigin.Current);
-            nodeInRamInfo.entries.Clear();
-            for (int i = 0; i < (order - 1); i++)
-            {
-                // Leemos una key
-                treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
-                //Convertimos la key leida
-
-
-                keyToAdd = keyToAdd.ParseToObjectType(ByteStringConverter(fileInBytes));
-
-
-                nodeInRamInfo.entries.Add(new Entry<TKey, TValue>());
-                nodeInRamInfo.entries[i].key = keyToAdd;
-
-                if (i != (order - 1) - 1)
-                    treeFile.Seek(SINGLE_SEPARATOR.Length, SeekOrigin.Current);
-
-
-
-
                 /*
-                 * Un error que tomo tiempo resolver en esta parte fue el no poder realizar keyToAdd = keyToAdd.ParseToObjectType(ByteStringConverter(fileInBytes));...
-                 * 
-                 * No entendiamos porque ya que explicitamente se decia arriba que tkey heredaba de la interfaz IStringParseable<tkey> la cual garantizaria que tkey tendria metodos para 
-                 * parsearse desde y hacia un string... resulto que en efecto la teoria estaba bien. El clavo, era que no podiamos ejecutar tal linea de codigo sin antes asignar keyToAdd... en 
-                 * otras palabras inicializar el objeto, ya que no se puede (o eso creo en este punto de mi vida) declarar metodos estaticos en una interfaz
-                 * 
-                 * la solucion fue asignar / inicializar keyToAdd = default(TKey), de esta forma ya pudimos llamar los metodos que necesitabamos.
-                 * 
-                 * 
-                 * */
-                //TValue valueToAdd = default(TValue);
+ * quiero saltar con begin... quiero saltar pipes... hay 12 pipes en cada field de encabezado ¿no? (quien lea esto cuente :v)
+ * 
+ * pero..... si se va a mover con current... piense que son cantidad de desplazamientos a la derecha. quiere moverse 11 caracteres, no use la constante 
+ * 
+ * de pipes porque esa es 12! Use la de chars... y eso.
+ * 
+ * al final la de pipes solo sirvio para calculos en el encabezado...
+ */
 
+                // SE ACTUALIZA EL APUNTADOR DEL NODO EN RAM
+                nodeInRam = x;
 
-                //valueToAdd = valueToAdd.ParseToObjectType(ByteStringConverter(fileInBytes));
+                byte[] fileInBytes = new byte[FIELD_LENGTH_CHARS];
 
-
-                //key.ParseToObjectType(ByteStringConverter(fileInBytes));
-
-                //TKey key = key.ParseToObjectType("");
-                //nodeInfo.children.Add(childPointer);
-            }
-
-            // Values
-            treeFile.Seek(BIG_SEPARATOR.Length, SeekOrigin.Current);
-
-            for (int i = 0; i < (order - 1); i++)
-            {
-                //Leemos un vlaue
+                // UPDATE HEADER
+                // Apuntador a Raiz
+                treeFile.Seek(FIELD_LENGTH_PIPES * 0, SeekOrigin.Begin);
                 treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
-                //Convertimos el value leido
-                //TValue valueToAdd = default(TValue);
-                valueToAdd = valueToAdd.ParseToObjectType(ByteStringConverter(fileInBytes));
+                root = long.Parse(ByteStringConverter(fileInBytes));
 
-                nodeInRamInfo.entries[i].value = valueToAdd;
+                // Apuntador a ultima posicion vacia, no se actualiza en RAM
+                treeFile.Seek(FIELD_LENGTH_PIPES * 1, SeekOrigin.Begin);
+                //aqui corresponderia actualizar ultima posicion vacia
+
+                // Tamano
+                treeFile.Seek(FIELD_LENGTH_PIPES * 2, SeekOrigin.Begin);
+
+                treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
+                numberOfNodes = long.Parse(ByteStringConverter(fileInBytes));
+
+                // Orden
+                treeFile.Seek(FIELD_LENGTH_PIPES * 3, SeekOrigin.Begin);
+                treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
+                order = long.Parse(ByteStringConverter(fileInBytes));
+
+                // Altura
+                treeFile.Seek(FIELD_LENGTH_PIPES * 4, SeekOrigin.Begin);
+                treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
+                height = long.Parse(ByteStringConverter(fileInBytes));
+
+                UpdateFileHeader(treeFile);
+
+                //UPDATE NODE IN RAM
+                int headerSize = FIELD_LENGTH_PIPES * 5;
+
+                long lineSize = CalculateLineSize();
+
+                long PositionToSeekInBytes = headerSize + x * lineSize;
+                treeFile.Seek(PositionToSeekInBytes, SeekOrigin.Begin);
+
+                // Father Position
+                //treeFile.Seek(FIELD_LENGTH * 1 + SINGLE_SEPARATOR.Length, SeekOrigin.Current);
+                // nodeInfo.Posicion padre <- actualizar
+
+
+                treeFile.Seek(FIELD_LENGTH_CHARS, SeekOrigin.Current);
+                // Children
+                treeFile.Seek(BIG_SEPARATOR.Length, SeekOrigin.Current); //"Read te mueve"...
+                nodeInRamInfo.children.Clear();
+                for (int i = 0; i < (order); i++)
+                {
+                    treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
+                    long childPointer = long.Parse(ByteStringConverter(fileInBytes));
+                    nodeInRamInfo.children.Add(childPointer);
+
+                    if (i != (order) - 1)
+                        treeFile.Seek(SINGLE_SEPARATOR.Length, SeekOrigin.Current);
+                }
+                nodeInRamInfo.isLeaf = nodeInRamInfo.IsLeaf();
+
+                // Keys
+                treeFile.Seek(BIG_SEPARATOR.Length, SeekOrigin.Current);
+                nodeInRamInfo.entries.Clear();
+                nodeInRamInfo.numberOfKeys = 0;
+                for (int i = 0; i < (order - 1); i++)
+                {
+                    // Leemos una key
+                    treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
+
+                    if (ByteStringConverter(fileInBytes) != int.MinValue.ToString())
+                        nodeInRamInfo.numberOfKeys++;
+                    //Convertimos la key leida
+
+
+                    keyToAdd = keyToAdd.ParseToObjectType(ByteStringConverter(fileInBytes));
+
+
+                    nodeInRamInfo.entries.Add(new Entry<TKey, TValue>());
+                    nodeInRamInfo.entries[i].key = keyToAdd;
+
+
+                    if (i != (order - 1) - 1)
+                        treeFile.Seek(SINGLE_SEPARATOR.Length, SeekOrigin.Current);
 
 
 
-                if (i != (order - 1) - 1) //Para mantener las cosas estandarizadas se dejara esta condicion.. que se hubiera podido obviar no escribir mas codigo para saltar el ultimo pipe de la linea...
-                    treeFile.Seek(SINGLE_SEPARATOR.Length, SeekOrigin.Current);
+
+                    /*
+                     * Un error que tomo tiempo resolver en esta parte fue el no poder realizar keyToAdd = keyToAdd.ParseToObjectType(ByteStringConverter(fileInBytes));...
+                     * 
+                     * No entendiamos porque ya que explicitamente se decia arriba que tkey heredaba de la interfaz IStringParseable<tkey> la cual garantizaria que tkey tendria metodos para 
+                     * parsearse desde y hacia un string... resulto que en efecto la teoria estaba bien. El clavo, era que no podiamos ejecutar tal linea de codigo sin antes asignar keyToAdd... en 
+                     * otras palabras inicializar el objeto, ya que no se puede (o eso creo en este punto de mi vida) declarar metodos estaticos en una interfaz
+                     * 
+                     * la solucion fue asignar / inicializar keyToAdd = default(TKey), de esta forma ya pudimos llamar los metodos que necesitabamos.
+                     * 
+                     * 
+                     * */
+                    //TValue valueToAdd = default(TValue);
+
+
+                    //valueToAdd = valueToAdd.ParseToObjectType(ByteStringConverter(fileInBytes));
+
+
+                    //key.ParseToObjectType(ByteStringConverter(fileInBytes));
+
+                    //TKey key = key.ParseToObjectType("");
+                    //nodeInfo.children.Add(childPointer);
+                }
+
+                // Values
+                treeFile.Seek(BIG_SEPARATOR.Length, SeekOrigin.Current);
+
+                for (int i = 0; i < (order - 1); i++)
+                {
+                    //Leemos un vlaue
+                    treeFile.Read(fileInBytes, 0, FIELD_LENGTH_CHARS);
+                    //Convertimos el value leido
+                    //TValue valueToAdd = default(TValue);
+                    valueToAdd = valueToAdd.ParseToObjectType(ByteStringConverter(fileInBytes));
+
+                    nodeInRamInfo.entries[i].value = valueToAdd;
+
+
+
+                    if (i != (order - 1) - 1) //Para mantener las cosas estandarizadas se dejara esta condicion.. que se hubiera podido obviar no escribir mas codigo para saltar el ultimo pipe de la linea...
+                        treeFile.Seek(SINGLE_SEPARATOR.Length, SeekOrigin.Current);
+                }
+
+
+
+                // Ultimo Pipe de la linea
+                //treeFile.Seek(SINGLE_SEPARATOR.Length, SeekOrigin.Current); De hecho creo que no es necesario saltar dicho pipe....
+
             }
 
-
-
-            // Ultimo Pipe de la linea
-            //treeFile.Seek(SINGLE_SEPARATOR.Length, SeekOrigin.Current); De hecho creo que no es necesario saltar dicho pipe....
 
         }
 
@@ -289,56 +305,64 @@ namespace DataStructuresURL_3._0
 
         void DiskWrite(long x)
         {
-            //El cursor debe estar siempre en la posicion donde se va a escribir...
-            int headerSize = FIELD_LENGTH_PIPES * 5;
-            long lineSize = CalculateLineSize();
-            long currentFreePosition = headerSize + lineSize * x;
-            treeFile.Seek(currentFreePosition, SeekOrigin.Begin);
-
-            // POSITION / POINTERS
-            WriteInFile(treeFile, x.ToString(DEFAULT_FORMAT));
-            //WriteInFile(treeFile, SINGLE_SEPARATOR);
-            // POINTERS TO FATHER'S
-            //WriteInFile(treeFile, "PosicionPadre");
-            WriteInFile(treeFile, BIG_SEPARATOR);
-            // POINTERS TO CHILDREN
-            for (int i = 0; i < order; i++)
+            using (FileStream treeFile = new FileStream(treeDiskPath, FileMode.Open, FileAccess.ReadWrite))
             {
-                if (!nodeInRamInfo.isLeaf)
-                    WriteInFile(treeFile, nodeInRamInfo.children[i].ToString(DEFAULT_FORMAT));
-                else
-                    WriteInFile(treeFile, int.MinValue.ToString());
+                //treeFile = File.Open(treeDiskPath, FileMode.Open);
+                //El cursor debe estar siempre en la posicion donde se va a escribir...
+                int headerSize = FIELD_LENGTH_PIPES * 5;
+                long lineSize = CalculateLineSize();
+                long currentFreePosition = headerSize + lineSize * x;
+                treeFile.Seek(currentFreePosition, SeekOrigin.Begin);
 
-                if (i != (order) - 1)
-                    WriteInFile(treeFile, SINGLE_SEPARATOR);
+                // POSITION / POINTERS
+                WriteInFile(treeFile, x.ToString(DEFAULT_FORMAT));
+                //WriteInFile(treeFile, SINGLE_SEPARATOR);
+                // POINTERS TO FATHER'S
+                //WriteInFile(treeFile, "PosicionPadre");
+                WriteInFile(treeFile, BIG_SEPARATOR);
+                // POINTERS TO CHILDREN
+                for (int i = 0; i < order; i++)
+                {
+                    if (!nodeInRamInfo.isLeaf
+                        && nodeInRamInfo.children[i] != int.MinValue)
+                        WriteInFile(treeFile, nodeInRamInfo.children[i].ToString(DEFAULT_FORMAT));
+                    else
+                        WriteInFile(treeFile, int.MinValue.ToString());
+
+                    if (i != (order) - 1)
+                        WriteInFile(treeFile, SINGLE_SEPARATOR);
+
+                }
+                WriteInFile(treeFile, BIG_SEPARATOR);
+                // KEYS
+                for (int i = 0; i < order - 1; i++)
+                {
+                    if (i < nodeInRamInfo.numberOfKeys)
+                        WriteInFile(treeFile, keyToAdd.ParseToString(nodeInRamInfo.entries[i].key));
+                    else
+                        WriteInFile(treeFile, int.MinValue.ToString());
+
+
+                    if (i != (order - 1) - 1)
+                        WriteInFile(treeFile, SINGLE_SEPARATOR);
+                }
+                WriteInFile(treeFile, BIG_SEPARATOR);
+                // VALUES
+                for (int i = 0; i < order - 1; i++)
+                {
+                    if (i < nodeInRamInfo.numberOfKeys)
+                        WriteInFile(treeFile, valueToAdd.ParseToString(nodeInRamInfo.entries[i].value));
+                    else
+                        WriteInFile(treeFile, int.MinValue.ToString());
+
+                    if (i != (order - 1) - 1)
+                        WriteInFile(treeFile, SINGLE_SEPARATOR);
+                }
+                WriteInFile(treeFile, "\n");
 
             }
-            WriteInFile(treeFile, BIG_SEPARATOR);
-            // KEYS
-            for (int i = 0; i < order - 1; i++)
-            {
-                if (i < nodeInRamInfo.numberOfKeys)
-                    WriteInFile(treeFile, keyToAdd.ParseToString(nodeInRamInfo.entries[i].key));
-                else
-                    WriteInFile(treeFile, int.MinValue.ToString());
 
-
-                if (i != (order - 1) - 1)
-                    WriteInFile(treeFile, SINGLE_SEPARATOR);
-            }
-            WriteInFile(treeFile, BIG_SEPARATOR);
-            // VALUES
-            for (int i = 0; i < order - 1; i++)
-            {
-                if (i < nodeInRamInfo.numberOfKeys)
-                    WriteInFile(treeFile, valueToAdd.ParseToString(nodeInRamInfo.entries[i].value));
-                else
-                    WriteInFile(treeFile, int.MinValue.ToString());
-
-                if (i != (order - 1) - 1)
-                    WriteInFile(treeFile, SINGLE_SEPARATOR);
-            }
-            WriteInFile(treeFile, "\n");
+            
         }
 
 
@@ -502,7 +526,7 @@ namespace DataStructuresURL_3._0
 
 
         }
- 
+
 
 
         public void Create()
@@ -527,8 +551,7 @@ namespace DataStructuresURL_3._0
             long pivotNode = nodeInRam;
             DiskRead(r);
 
-            Node<TKey, TValue> nodeInfo_r = new Node<TKey, TValue>();
-            nodeInfo_r = nodeInRamInfo;
+            Node<TKey, TValue> nodeInfo_r = new Node<TKey, TValue>(nodeInRamInfo);
             DiskRead(pivotNode);
 
 
@@ -537,13 +560,14 @@ namespace DataStructuresURL_3._0
                 long s = AllocateNode();
                 Node<TKey, TValue> nodeInfo_s = new Node<TKey, TValue>();
                 root = s;
+                UpdateFileHeader();
                 nodeInfo_s.isLeaf = false;
                 nodeInfo_s.numberOfKeys = 0;
                 nodeInfo_s.children.Add(r);//nodeInfo_s.children[0] = r;
                 SplitChild(s, nodeInfo_s, 0, r, nodeInfo_r);
                 InsertNonFull(s, nodeInfo_s, entry);
             }
-            else
+            else//9--------------
             {
                 InsertNonFull(r, nodeInfo_r, entry);
             }
@@ -562,7 +586,7 @@ namespace DataStructuresURL_3._0
                     xInfo.entries[(int)i + 1] = xInfo.entries[(int)i];
                     i--;
                 }
-                xInfo.entries[(int)i/* + 1*/] = entry;
+                xInfo.entries[(int)i + 1] = entry;
                 xInfo.numberOfKeys++;
                 DiskWrite(x, xInfo);
             }
@@ -579,16 +603,19 @@ namespace DataStructuresURL_3._0
                 {
                     SplitChild(x, xInfo, i, xInfo.children[(int)i], nodeInRamInfo);
                     if (entry.key.CompareTo(xInfo.entries[(int)i].key) == 1)
+                    {
                         i++;
+                        DiskRead(xInfo.children[(int)i]);
+                    }
                 }
-                InsertNonFull(xInfo.children[(int)i], nodeInRamInfo, entry);
+                InsertNonFull(xInfo.children[(int)i], new Node<TKey, TValue>(nodeInRamInfo)/*Una nueva instancia para que DiskRead no se cague en el parametro al modificar nodeInRam*/, entry);
             }
         }
 
 
         public List<Entry<TKey, TValue>> expandList(List<Entry<TKey, TValue>> entriesList, long size)
         {
-            for(int i = 0; entriesList.Count < size; i++)
+            for (int i = 0; entriesList.Count < size; i++)
             {
                 entriesList.Add(new Entry<TKey, TValue>());
             }
@@ -614,7 +641,16 @@ namespace DataStructuresURL_3._0
         /// <param name="childNode_y">Assumed to be in main memory</param>
         public void SplitChild(long parentNode_X, Node<TKey, TValue> nodeInfo_X, long i, long childNode_y, Node<TKey, TValue> nodeInfo_y)
         {
+
+            /*
+             *          X | | | | 
+             *           /  \
+             *          /    \
+             *     Y |||||     Z||||||
+             * 
+             */
             long z = AllocateNode();
+            UpdateFileHeader();
             Node<TKey, TValue> nodeInfo_z = new Node<TKey, TValue>();
             nodeInfo_z.isLeaf = nodeInfo_y.isLeaf;
             nodeInfo_z.numberOfKeys = minimumDegreeT - 1;
@@ -627,7 +663,7 @@ namespace DataStructuresURL_3._0
 
             //--------
 
-
+            // LE PASAMOS ELEMENTOS DE Y A Z.
             for (long j = 0; j < minimumDegreeT - 1; j++)
             {
                 //nodeInfo_z.entries.Add(new Entry<TKey, TValue>());//truco sucio...ntt no es sucio, es shuquisimo
@@ -638,19 +674,26 @@ namespace DataStructuresURL_3._0
                 for (long j = 0; j < minimumDegreeT; j++)
                 {
                     nodeInfo_z.children[(int)j] = nodeInfo_y.children[(int)j + (int)minimumDegreeT];
+                    nodeInfo_y.children[(int)j + (int)minimumDegreeT] = int.MinValue;
                 }
             }
+            // 
             nodeInfo_y.numberOfKeys = minimumDegreeT - 1;
-            for (long j = nodeInfo_X.numberOfKeys /*+ 1*/; j == i + 1; j--)
+            // MOVEMOS HIJOS EN X PARA HACER ESPACIO Y METERLE Z COMO HIJO
+            for (long j = nodeInfo_X.numberOfKeys + 1; j == i; j--)
             {
                 nodeInfo_X.children[(int)j + 1] = nodeInfo_X.children[(int)j];
             }
+            // METEMOS Z
             nodeInfo_X.children[(int)i + 1] = z;
-            for (long j = nodeInfo_X.numberOfKeys; j == i; j--)
+
+            // MOVEMOS ELEMENTOS DE X... PARA SUBIR UN ELEMENTO DE Y
+            for (long j = nodeInfo_X.numberOfKeys - 1; j > i - 1; j--)
             {
                 nodeInfo_X.entries[(int)j + 1] = nodeInfo_X.entries[(int)j];
             }
-            nodeInfo_X.entries[(int)i] = nodeInfo_y.entries[(int)minimumDegreeT];
+            // METER ELEMENTO DE Y
+            nodeInfo_X.entries[(int)i] = nodeInfo_y.entries[(int)minimumDegreeT /*restamos para ajustar contadores c#*/ - 1];
             nodeInfo_X.numberOfKeys++;
 
 
@@ -667,32 +710,74 @@ namespace DataStructuresURL_3._0
 
         void UpdateFileHeader()
         {
-            // UPDATE HEADER EN FILE
-            // Apuntador a Raiz
-            treeFile.Seek(FIELD_LENGTH_PIPES * 0, SeekOrigin.Begin);
-            WriteInFile(treeFile, root.ToString(DEFAULT_FORMAT));
+            using (FileStream treeFile = new FileStream(treeDiskPath, FileMode.Open, FileAccess.ReadWrite))
+            {
+                // UPDATE HEADER EN FILE
+                // Apuntador a Raiz
+                //treeFile = File.Open(treeDiskPath, FileMode.Open);
+                treeFile.Seek(FIELD_LENGTH_PIPES * 0, SeekOrigin.Begin);
+                WriteInFile(treeFile, root.ToString(DEFAULT_FORMAT));
 
 
-            // Apuntador a ultima posicion vacia, no se actualiza en RAM
-            treeFile.Seek(FIELD_LENGTH_PIPES * 1, SeekOrigin.Begin);
-            //aqui corresponderia actualizar ultima posicion vacia
-
-            // Tamano
-            treeFile.Seek(FIELD_LENGTH_PIPES * 2, SeekOrigin.Begin);
-
+                // Apuntador a ultima posicion vacia, no se actualiza en RAM
+                treeFile.Seek(FIELD_LENGTH_PIPES * 1, SeekOrigin.Begin);
+                //aqui corresponderia actualizar ultima posicion vacia
+                // Tamano
+                treeFile.Seek(FIELD_LENGTH_PIPES * 2, SeekOrigin.Begin);
 
 
-            WriteInFile(treeFile, numberOfNodes.ToString(DEFAULT_FORMAT));
+
+                WriteInFile(treeFile, numberOfNodes.ToString(DEFAULT_FORMAT));
 
 
-            // Orden
-            treeFile.Seek(FIELD_LENGTH_PIPES * 3, SeekOrigin.Begin);
-            WriteInFile(treeFile, order.ToString(DEFAULT_FORMAT));
+                // Orden
+                treeFile.Seek(FIELD_LENGTH_PIPES * 3, SeekOrigin.Begin);
+                WriteInFile(treeFile, order.ToString(DEFAULT_FORMAT));
 
 
-            // Altura
-            treeFile.Seek(FIELD_LENGTH_PIPES * 4, SeekOrigin.Begin);
-            WriteInFile(treeFile, height.ToString(DEFAULT_FORMAT));
+                // Altura
+                treeFile.Seek(FIELD_LENGTH_PIPES * 4, SeekOrigin.Begin);
+                WriteInFile(treeFile, height.ToString(DEFAULT_FORMAT));
+
+
+            }
+
+        }
+
+
+        void UpdateFileHeader(FileStream treeFile)
+        {
+
+                // UPDATE HEADER EN FILE
+                // Apuntador a Raiz
+                //treeFile = File.Open(treeDiskPath, FileMode.Open);
+                treeFile.Seek(FIELD_LENGTH_PIPES * 0, SeekOrigin.Begin);
+                WriteInFile(treeFile, root.ToString(DEFAULT_FORMAT));
+
+
+                // Apuntador a ultima posicion vacia, no se actualiza en RAM
+                treeFile.Seek(FIELD_LENGTH_PIPES * 1, SeekOrigin.Begin);
+                //aqui corresponderia actualizar ultima posicion vacia
+
+                // Tamano
+                treeFile.Seek(FIELD_LENGTH_PIPES * 2, SeekOrigin.Begin);
+
+
+
+                WriteInFile(treeFile, numberOfNodes.ToString(DEFAULT_FORMAT));
+
+
+                // Orden
+                treeFile.Seek(FIELD_LENGTH_PIPES * 3, SeekOrigin.Begin);
+                WriteInFile(treeFile, order.ToString(DEFAULT_FORMAT));
+
+
+                // Altura
+                treeFile.Seek(FIELD_LENGTH_PIPES * 4, SeekOrigin.Begin);
+                WriteInFile(treeFile, height.ToString(DEFAULT_FORMAT));
+
+
+
         }
 
     }

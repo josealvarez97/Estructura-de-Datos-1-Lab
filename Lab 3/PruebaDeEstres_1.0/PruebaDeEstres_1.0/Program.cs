@@ -52,7 +52,16 @@ namespace PruebaDeEstres_1._0
 
             tree_1.Create();
 
-            for (int i = 0; i < 20; i++)
+            List<int> numbers = new List<int>();
+
+            
+            while(numbers.Count <= 20)
+            {
+                int number = new Random().Next(0, 21);
+                if (!numbers.Exists(x => x == number))
+                    numbers.Add(number);
+            }
+            for (int i = 0; i <= 20; i++)
             {
 
                 tree_1.Insert(new Entry<Int, Int>(i.ToString(), i.ToString()));
