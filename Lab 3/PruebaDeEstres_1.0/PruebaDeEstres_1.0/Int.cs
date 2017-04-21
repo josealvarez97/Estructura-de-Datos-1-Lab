@@ -7,11 +7,39 @@ using DataStructuresURL_3._0;
 
 namespace PruebaDeEstres_1._0
 {
-    class Int : IStringParseable<Int>, IComparable<Int>
+    public class Int : IStringParseable<Int>, IComparable<Int>
     {
 
         public int value { get; set; }
 
+        public int objectLength
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string DEFAULT_FORMAT_
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public string DEFAULT_MIN_VAL_FORMAT
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Int()
+        {
+            this.value = 0;
+        }
 
         //https://msdn.microsoft.com/es-es/library/4d7sx9hd(v=vs.110).aspx
         int IComparable<Int>.CompareTo(Int other)
@@ -32,7 +60,12 @@ namespace PruebaDeEstres_1._0
 
         string IStringParseable<Int>.ParseToString(Int obj)
         {
-            return obj.value.ToString("00000000000");
+            if (obj.value != int.MinValue)
+                return obj.value.ToString("00000000000");
+            else
+                return obj.value.ToString();
+
         }
+
     }
 }

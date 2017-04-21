@@ -17,13 +17,12 @@ namespace DataStructuresURL_3._0
 
         public Entry()
         {
-
         }
         //Los siguientes metodos no se usaran pero seria interesante utilizarlos...
         public Entry(string strTkey, string strTvalue)
         {
-            TKey keyToAdd = default(TKey);
-            TValue valueToAdd = default(TValue);
+            TKey keyToAdd = (TKey)Activator.CreateInstance(typeof(TKey));
+            TValue valueToAdd = (TValue)Activator.CreateInstance(typeof(TValue));
 
             keyToAdd = keyToAdd.ParseToObjectType(strTkey);
             valueToAdd = valueToAdd.ParseToObjectType(strTvalue);
