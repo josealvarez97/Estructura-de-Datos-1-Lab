@@ -28,11 +28,12 @@ namespace PruebaDeEstres_1._0
     {
         static void Main(string[] args)
         {
-
+            const int datos_arbol = 100000;
+            const int datosLista = 1000;
             Console.WriteLine("INGRESE NOMBRE DE ARCHIVO PARA PRESENTAR RESULTADO FINAL");
             string fileName = Console.ReadLine();
-            //Console.WriteLine("INGRESE DIRECCION DEL DIRECTORIO DONDE DESEA GUARDAR EL ARCHIVO ANTERIOR");
-            string directory = "C:/Users/Oscar/Desktop/Laboratorio Estructuras/Estructura-de-Datos-1-Lab/Lab 3/Arboles/";/*Console.ReadLine();*/
+            Console.WriteLine("INGRESE DIRECCION DEL DIRECTORIO DONDE DESEA GUARDAR EL ARCHIVO ANTERIOR");
+            string directory = Console.ReadLine();/*"C:/Users/Oscar/Desktop/Laboratorio Estructuras/Estructura-de-Datos-1-Lab/Lab 3/Arboles/"*/;/*Console.ReadLine();*/
             Registro objRegistro = new Registro();
             //objRegistro.guidValue = Guid.NewGuid();
 
@@ -66,14 +67,14 @@ namespace PruebaDeEstres_1._0
                 // PROCESO ARBOL<3>
                 tree_3.Create();
 
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < datos_arbol; i++)
                 {
                     string GuidValue = Guid.NewGuid().ToString();
                     tree_3.Insert(new Entry<Registro, Registro>(GuidValue, GuidValue));
 
                     Registro reg1 = new Registro();
                     reg1.guidValue = Guid.Parse(GuidValue);
-                    if (i % 2 == 0)
+                    if (i % datosLista == 0)
                         list_3.AddLast(reg1);
                 }
                 averageSearchTime = 0;
@@ -91,14 +92,14 @@ namespace PruebaDeEstres_1._0
                 // PROCESO ARBOL<4>
                 tree_4.Create();
 
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < datos_arbol; i++)
                 {
                     string GuidValue = Guid.NewGuid().ToString();
                     tree_4.Insert(new Entry<Registro, Registro>(GuidValue, GuidValue));
 
                     Registro reg1 = new Registro();
                     reg1.guidValue = Guid.Parse(GuidValue);
-                    if (i % 2 == 0)
+                    if (i % datosLista == 0)
                         list_4.AddLast(reg1);
                 }
                 averageSearchTime = 0;
@@ -116,14 +117,14 @@ namespace PruebaDeEstres_1._0
                 // PROCESO ARBOL<5>
                 tree_5.Create();
 
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < datos_arbol; i++)
                 {
                     string GuidValue = Guid.NewGuid().ToString();
                     tree_5.Insert(new Entry<Registro, Registro>(GuidValue, GuidValue));
 
                     Registro reg1 = new Registro();
                     reg1.guidValue = Guid.Parse(GuidValue);
-                    if (i % 2 == 0)
+                    if (i % datosLista == 0)
                         list_5.AddLast(reg1);
                 }
                 averageSearchTime = 0;
@@ -141,14 +142,14 @@ namespace PruebaDeEstres_1._0
                 // PROCESO ARBOL<6>
                 tree_6.Create();
 
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < datos_arbol; i++)
                 {
                     string GuidValue = Guid.NewGuid().ToString();
                     tree_6.Insert(new Entry<Registro, Registro>(GuidValue, GuidValue));
 
                     Registro reg1 = new Registro();
                     reg1.guidValue = Guid.Parse(GuidValue);
-                    if (i % 2 == 0)
+                    if (i % datosLista == 0)
                         list_6.AddLast(reg1);
                 }
                 averageSearchTime = 0;
@@ -166,14 +167,14 @@ namespace PruebaDeEstres_1._0
                 //PROCESO ARBOL<7>
                 tree_7.Create();
 
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < datos_arbol; i++)
                 {
                     string GuidValue = Guid.NewGuid().ToString();
                     tree_7.Insert(new Entry<Registro, Registro>(GuidValue, GuidValue));
 
                     Registro reg1 = new Registro();
                     reg1.guidValue = Guid.Parse(GuidValue);
-                    if (i % 2 == 0)
+                    if (i % datosLista == 0)
                         list_7.AddLast(reg1);
                 }
                 averageSearchTime = 0;
@@ -191,14 +192,14 @@ namespace PruebaDeEstres_1._0
                 //PROCESO ARBOL<8>
                 tree_8.Create();
 
-                for (int i = 0; i < 100; i++)
+                for (int i = 0; i < datos_arbol; i++)
                 {
                     string GuidValue = Guid.NewGuid().ToString();
                     tree_8.Insert(new Entry<Registro, Registro>(GuidValue, GuidValue));
 
                     Registro reg1 = new Registro();
                     reg1.guidValue = Guid.Parse(GuidValue);
-                    if (i % 2 == 0)
+                    if (i % datosLista == 0)
                         list_8.AddLast(reg1);
                 }
                 averageSearchTime = 0;
@@ -213,58 +214,57 @@ namespace PruebaDeEstres_1._0
                 averageSearchTime = averageSearchTime / list_8.Count;
                 average = TimeSpan.FromMilliseconds(averageSearchTime);
                 report.WriteLine("ARBOL<8> TIEMPO DE INSERCIÓN: " + average.ToString() + " ms");
-                //PROCESO ARBOL<9>
-                tree_9.Create();
+                ////PROCESO ARBOL<9>
+                //tree_9.Create();
 
-                for (int i = 0; i < 100; i++)
-                {
-                    string GuidValue = Guid.NewGuid().ToString();
-                    tree_9.Insert(new Entry<Registro, Registro>(GuidValue, GuidValue));
+                //for (int i = 0; i < datos_arbol; i++)
+                //{
+                //    string GuidValue = Guid.NewGuid().ToString();
+                //    tree_9.Insert(new Entry<Registro, Registro>(GuidValue, GuidValue));
 
-                    Registro reg1 = new Registro();
-                    reg1.guidValue = Guid.Parse(GuidValue);
-                    if (i % 2 == 0)
-                        list_9.AddLast(reg1);
-                }
-                averageSearchTime = 0;
-                for (int i = 0; i < list_9.Count; i++)
-                {
-                    DateTime start = DateTime.Now;
-                    tree_9.Search(list_9.ElementAt<Registro>(i));
-                    DateTime end = DateTime.Now;
+                //    Registro reg1 = new Registro();
+                //    reg1.guidValue = Guid.Parse(GuidValue);
+                //    if (i % datosLista == 0)
+                //        list_9.AddLast(reg1);
+                //}
+                //averageSearchTime = 0;
+                //for (int i = 0; i < list_9.Count; i++)
+                //{
+                //    DateTime start = DateTime.Now;
+                //    tree_9.Search(list_9.ElementAt<Registro>(i));
+                //    DateTime end = DateTime.Now;
 
-                    averageSearchTime += (end - start).TotalMilliseconds;
-                }
-                averageSearchTime = averageSearchTime / list_9.Count;
-                average = TimeSpan.FromMilliseconds(averageSearchTime);
-                report.WriteLine("ARBOL<9> TIEMPO DE INSERCIÓN: " + average.ToString() + " ms");
-                //PROCESO ARBOL<10>
-                tree_10.Create();
+                //    averageSearchTime += (end - start).TotalMilliseconds;
+                //}
+                //averageSearchTime = averageSearchTime / list_9.Count;
+                //average = TimeSpan.FromMilliseconds(averageSearchTime);
+                //report.WriteLine("ARBOL<9> TIEMPO DE INSERCIÓN: " + average.ToString() + " ms");
+                ////PROCESO ARBOL<10>
+                //tree_10.Create();
 
-                for (int i = 0; i < 100; i++)
-                {
-                    string GuidValue = Guid.NewGuid().ToString();
-                    tree_10.Insert(new Entry<Registro, Registro>(GuidValue, GuidValue));
+                //for (int i = 0; i < datos_arbol; i++)
+                //{
+                //    string GuidValue = Guid.NewGuid().ToString();
+                //    tree_10.Insert(new Entry<Registro, Registro>(GuidValue, GuidValue));
 
-                    Registro reg1 = new Registro();
-                    reg1.guidValue = Guid.Parse(GuidValue);
-                    if (i % 2 == 0)
-                        list_10.AddLast(reg1);
-                }
-                averageSearchTime = 0;
-                for (int i = 0; i < list_10.Count; i++)
-                {
-                    DateTime start = DateTime.Now;
-                    tree_10.Search(list_10.ElementAt<Registro>(i));
-                    DateTime end = DateTime.Now;
+                //    Registro reg1 = new Registro();
+                //    reg1.guidValue = Guid.Parse(GuidValue);
+                //    if (i % datosLista == 0)
+                //        list_10.AddLast(reg1);
+                //}
+                //averageSearchTime = 0;
+                //for (int i = 0; i < list_10.Count; i++)
+                //{
+                //    DateTime start = DateTime.Now;
+                //    tree_10.Search(list_10.ElementAt<Registro>(i));
+                //    DateTime end = DateTime.Now;
 
-                    averageSearchTime += (end - start).TotalMilliseconds;
-                }
-                averageSearchTime = averageSearchTime / list_10.Count;
-                average = TimeSpan.FromMilliseconds(averageSearchTime);
-                report.WriteLine("ARBOL<10> TIEMPO DE INSERCIÓN: " + average.ToString() + " ms");
+                //    averageSearchTime += (end - start).TotalMilliseconds;
+                //}
+                //averageSearchTime = averageSearchTime / list_10.Count;
+                //average = TimeSpan.FromMilliseconds(averageSearchTime);
+                //report.WriteLine("ARBOL<10> TIEMPO DE INSERCIÓN: " + average.ToString() + " ms");
 
-                Console.ReadKey();
 
             }
 
