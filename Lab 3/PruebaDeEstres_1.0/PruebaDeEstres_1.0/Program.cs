@@ -33,7 +33,7 @@ namespace PruebaDeEstres_1._0
             string fileName = Console.ReadLine();
             Console.WriteLine("INGRESE DIRECCION DEL DIRECTORIO DONDE DESEA GUARDAR EL ARCHIVO ANTERIOR");
             string directory = "C:/Users/jjaa0/Documents/GitHub/Estructura-de-Datos-1-Lab/Lab 3/Arboles/";/*Console.ReadLine();*/
-            using (FileStream report = new FileStream(fileName, FileMode.Create, FileAccess.ReadWrite))
+            using (FileStream report = new FileStream(directory + fileName, FileMode.Create, FileAccess.ReadWrite))
             {
 
                 // DECLARACIÓN ARBOLES
@@ -56,6 +56,7 @@ namespace PruebaDeEstres_1._0
                 // DECLARACIÓN VARIABLES GLOBALES
                 double averageSearchTime = 0;
                 TimeSpan average;
+                byte[] bytes;
 
                 // PROCESO ARBOL<3>
                 tree_3.Create();
@@ -80,6 +81,8 @@ namespace PruebaDeEstres_1._0
                 }
                 averageSearchTime = averageSearchTime / 1000;
                 average = TimeSpan.FromSeconds(averageSearchTime);
+                bytes = Encoding.ASCII.GetBytes("ARBOL<3> TIEMPO DE INSERCIÓN: " + average.ToString() +"\n");
+                report.Write(bytes, 0, bytes.Length);
                 // PROCESO ARBOL<4>
                 tree_4.Create();
                 for (int i = 0; i < 1000000; i++)
@@ -103,7 +106,8 @@ namespace PruebaDeEstres_1._0
                 }
                 averageSearchTime = averageSearchTime / 1000;
                 average = TimeSpan.FromSeconds(averageSearchTime);
-
+                bytes = Encoding.ASCII.GetBytes("ARBOL<4> TIEMPO DE INSERCIÓN: " + average.ToString() + "\n");
+                report.Write(bytes, 0, bytes.Length);
 
             }
 
