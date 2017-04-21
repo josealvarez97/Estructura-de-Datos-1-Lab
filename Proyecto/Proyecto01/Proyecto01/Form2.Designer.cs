@@ -50,6 +50,7 @@
             this.uploadDictionaryDefault.TabIndex = 1;
             this.uploadDictionaryDefault.Text = "Usar Diccionario Predeterminado";
             this.uploadDictionaryDefault.UseVisualStyleBackColor = true;
+            this.uploadDictionaryDefault.Click += new System.EventHandler(this.uploadDictionaryDefault_Click);
             // 
             // Form2
             // 
