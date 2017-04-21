@@ -400,7 +400,7 @@ namespace DataStructuresURL_3._0
             // Sum 4 pipes
             lineSize += BIG_SEPARATOR.Length;
             //// SumChildren
-            for (int i = 0; i < 2 * minimumDegreeT; i++)
+            for (int i = 0; i < order; i++)
             {
                 lineSize += FIELD_LENGTH_CHARS;
                 if (i != (2 * minimumDegreeT) - 1)
@@ -410,20 +410,20 @@ namespace DataStructuresURL_3._0
             lineSize += BIG_SEPARATOR.Length;
             // Sum Keys
             TKey keyObj = (TKey)Activator.CreateInstance(typeof(TKey));
-            for (int i = 0; i < 2 * minimumDegreeT - 1; i++)
+            for (int i = 0; i < order - 1; i++)
             {
                 lineSize += keyObj.objectLength;
-                if (i != (2 * minimumDegreeT - 1) - 1)
+                if (i != (order - 1) - 1)
                     lineSize++;
             }
             // Sum 4 pipes
             lineSize += BIG_SEPARATOR.Length;
             // Sum Values
             TValue valueObj = (TValue)Activator.CreateInstance(typeof(TValue));
-            for (int i = 0; i < 2 * minimumDegreeT - 1; i++)
+            for (int i = 0; i < order - 1; i++)
             {
                 lineSize += valueObj.objectLength;
-                if (i != (2 * minimumDegreeT - 1) - 1)
+                if (i != (order - 1) - 1)
                     lineSize++;
             }
 
