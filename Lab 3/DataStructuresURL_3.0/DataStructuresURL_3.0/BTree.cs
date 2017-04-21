@@ -443,7 +443,7 @@ namespace DataStructuresURL_3._0
 
         //}
 
-        public TKey Search(long x, TKey key)
+        public Entry<TKey, TValue> Search(long x, TKey key)
         {
             long i = 0;
             while (i < nodeInRamInfo.numberOfKeys
@@ -452,13 +452,13 @@ namespace DataStructuresURL_3._0
                 i++;
             }
             if (i < nodeInRamInfo.numberOfKeys
-                && key.Equals(nodeInRamInfo.entries[(int)i].key))
+                && key.CompareTo(nodeInRamInfo.entries[(int)i].key) == 0)
             {
-                return nodeInRamInfo.entries[(int)i].key;
+                return nodeInRamInfo.entries[(int)i];
             }
             if (nodeInRamInfo.isLeaf)
             {
-                return default(TKey); //Como hacer que esto sea null...
+                return new Entry<TKey, TValue>(); //Como hacer que esto sea null...
             }
             else
             {
@@ -469,6 +469,11 @@ namespace DataStructuresURL_3._0
 
         }
 
+        public Entry<TKey, TValue> Search(TKey key)
+        {
+            DiskRead(root);
+            return Search(root, key);
+        }
 
 
         public void Create()
