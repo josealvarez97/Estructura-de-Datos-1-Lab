@@ -41,5 +41,20 @@ namespace Proyecto01
                 }
             }
         }
+
+        private void runButton_Click(object sender, EventArgs e)
+        {
+            //Sera una cola
+            Queue<SQLCommands> commandsToExecute = SQLTextParser.ReadActions(richTextBox1);
+            
+            while (commandsToExecute.Count != 0)
+            {
+                SQLFunctions.ExecuteCommand(commandsToExecute.Dequeue(), richTextBox1);
+            }
+
+
+
+
+        }
     }
 }
