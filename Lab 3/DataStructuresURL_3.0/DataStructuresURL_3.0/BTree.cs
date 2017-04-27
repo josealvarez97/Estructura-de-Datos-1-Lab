@@ -67,6 +67,7 @@ namespace DataStructuresURL_3._0
         }
 
 
+       
         public BTree(int order) //MALO
         {
             //    nodeInRamInfo = new Node<TKey, TValue>();
@@ -126,6 +127,18 @@ namespace DataStructuresURL_3._0
             }
 
 
+        }
+        public BTree()
+        {
+
+        }
+        public static BTree<TKey, TValue> ReadBTreeFromFile(string path)
+        {
+            BTree<TKey, TValue> bTree = new BTree<TKey, TValue>();
+            bTree.treeDiskPath = path;
+            
+            bTree.DiskRead(0); //Realmente solo es para actualizar el encabezado...
+            return bTree;
         }
 
 
