@@ -1,0 +1,115 @@
+﻿@model IEnumerable<Lab4_JoseAlvarez_OscarLemus.Models.Celular>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<body style="background-color:powderblue;">
+    <h2>Laboratorio 4</h2>
+
+    @using (Html.BeginForm("AddPhone", "Celular", FormMethod.Post))
+    {
+        <br />
+        <h3>Agregar Celular</h3>
+        <label>Número de teléfono: </label>
+        <br />
+        <input type="text" name="phoneNumber" id="phoneNumber" />
+        <br />
+        <label>Marca del celular: </label>
+        <br />
+        <input type="text" name="phoneBrand" id="phoneBrand" />
+        <br />
+        <label>Modelo del celular: </label>
+        <br />
+        <input type="text" name="phoneModel" id="phoneModel" />
+        <br />
+        <label>Sistema Operativo: </label>
+        <br />
+        <input type="text" name="phoneOS" id="phoneOS" />
+        <br />
+        <label>Capacidad memoria interna (GB): </label>
+        <br />
+        <input type="text" name="phoneCapacity" id="phoneCapacity" />
+        <br />
+        <label>RAM (GB): </label>
+        <br />
+        <input type="text" name="phoneRAM" id="phoneRAM" />
+        <br />
+        <button type="submit">Agregar celular</button>
+        <br />
+    }
+
+    <br />
+
+    @if (Session["dictionary"] != null)
+    {
+        using (Html.BeginForm("Search", "Celular", FormMethod.Get))
+        {
+            <p>
+                <h3>Buscar Celular:</h3><br />
+                Número de teléfono: @Html.TextBox("phoneNumber") <br />
+                <input type="submit" value="Filter" />
+            </p>
+        }
+
+        <br />
+
+        <table class="table">
+            <tr>
+                @*<th>
+                        @Html.DisplayNameFor(model => model.phoneNumber)
+                    </th>*@
+                <th>
+                    @Html.DisplayNameFor(model => model.phoneBrand)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.phoneModel)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.phoneOS)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.phoneCapacity)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.phoneRAM)
+                </th>
+                <th></th>
+            </tr>
+
+            @foreach (var item in Model)
+            {
+                <tr>
+                    @*<td>
+                            @Html.DisplayFor(modelItem => item.phoneNumber)
+                        </td>*@
+                    <td>
+                        @Html.DisplayFor(modelItem => item.phoneBrand)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.phoneModel)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.phoneOS)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.phoneCapacity)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.phoneRAM)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Edit", "Edit", new { id = item.phoneNumber }) |
+                        @Html.ActionLink("Delete", "Delete", new { id = item.phoneNumber })
+                    </td>
+                </tr>
+            }
+
+        </table>
+    }
+    else
+    {
+        <h3>No hay datos</h3>
+    }
+
+</body>
