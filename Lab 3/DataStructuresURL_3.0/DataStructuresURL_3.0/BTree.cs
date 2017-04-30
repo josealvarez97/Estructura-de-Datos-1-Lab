@@ -92,7 +92,7 @@ namespace DataStructuresURL_3._0
 
 
         }
-        public BTree(int order, string diskPathForTree)
+        public BTree(int order, string diskPathForTree, TValue valueModel)
         {
             treeDiskPath = diskPathForTree;
             using (FileStream treeFile = new FileStream(treeDiskPath, FileMode.Create, FileAccess.ReadWrite))
@@ -109,7 +109,7 @@ namespace DataStructuresURL_3._0
 
                 //http://stackoverflow.com/questions/752/get-a-new-object-instance-from-a-type
                 keyInstance = (TKey)Activator.CreateInstance(typeof(TKey)/*, new object()*/);
-                valueInstance = (TValue)Activator.CreateInstance(typeof(TValue));
+                valueInstance = valueModel;
 
                 //Apuntador a Raiz
                 WriteInFile(treeFile, int.MinValue.ToString() + "\n");
@@ -128,16 +128,41 @@ namespace DataStructuresURL_3._0
 
 
         }
-        public BTree()
+        public BTree(int order, TValue valueModel)
         {
 
+
+                nodeInRamInfo = new Node<TKey, TValue>();
+
+                this.order = order;
+                this.minimumDegreeT = order / 2;
+                this.numberOfNodes = 0;
+                this.height = 0;
+                //Estos no salvaron :v con instanciar tkey
+                //http://stackoverflow.com/questions/6410340/generics-in-c-sharp-how-can-i-create-an-instance-of-a-variable-type-with-an-ar
+                //keyToAdd = (TKey)Activator.CreateInstance(typeof(TKey), new object[] { null, null });
+
+                //http://stackoverflow.com/questions/752/get-a-new-object-instance-from-a-type
+                keyInstance = (TKey)Activator.CreateInstance(typeof(TKey)/*, new object()*/);
+                valueInstance = valueModel;
+
+
+
+
+
+
         }
-        public static BTree<TKey, TValue> ReadBTreeFromFile(string path)
+        public static BTree<TKey, TValue> ReadBTreeFromFile(string path, int order, TValue valueModel)
         {
-            BTree<TKey, TValue> bTree = new BTree<TKey, TValue>();
+            // Creamos una instancia en la que indicamos solo order y value model... no tocamos nada mas
+            BTree<TKey, TValue> bTree = new BTree<TKey, TValue>(order, valueModel);
+            // A esa instancia le especificamos manualmente el treeDiskPath (muy necesario para que funcione DiskRead)
             bTree.treeDiskPath = path;
             
-            bTree.DiskRead(0); //Realmente solo es para actualizar el encabezado...
+            // Utilizamos DiskRead con el unico fin de actualizar los atributos del encabezado en la RAM (root, nodeInRam, numberOfNodes...)
+            bTree.DiskRead(0); //Realmente solo es para actualizar el encabezado...por eso no importa que nodo leamos... por defecto entonces: el 0 
+
+            // Retornamos esa instancia del btree ya preparada con lo que necesitamso en RAM
             return bTree;
         }
 
