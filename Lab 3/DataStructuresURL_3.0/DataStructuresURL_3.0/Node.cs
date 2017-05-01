@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataStructuresURL_3._0
 {
-    public class Node<TKey, TValue> where TKey : IComparable<TKey>, IStringParseable<TKey> where TValue : IStringParseable<TValue>
+    public class Node<TKey, TValue> : IEnumerable<TKey> where TKey : IComparable<TKey>, IStringParseable<TKey> where TValue : IStringParseable<TValue>
     {
         public long numberOfKeys { get; set; }
         public List<Entry<TKey, TValue>> entries { get; set; }
@@ -58,6 +58,28 @@ namespace DataStructuresURL_3._0
 
             return leaf;
         }
+
+
+
+
+        // IMPLEMENTATION OF IEnumerable<TKey>
+        public IEnumerator<TKey> GetEnumerator()
+        {
+
+            for(int i = 0; i < numberOfKeys; i++)
+            {
+                yield return entries[i].key;
+            }
+
+
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return this.GetEnumerator();
+        }
+
+
 
     }
 }
