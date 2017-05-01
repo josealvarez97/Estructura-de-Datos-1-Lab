@@ -13,6 +13,7 @@ namespace DataStructuresURL_3._0
         string DEFAULT_MIN_VAL_FORMAT { get; }
 
         string ParseToString(T obj);
+        string ParseToString();
 
         T ParseToObjectType(string str);
 
