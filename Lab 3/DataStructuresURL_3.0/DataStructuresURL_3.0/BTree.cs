@@ -126,7 +126,6 @@ namespace DataStructuresURL_3._0
 
             }
 
-
         }
         public BTree(int order, TValue valueModel)
         {
@@ -312,9 +311,9 @@ namespace DataStructuresURL_3._0
                     treeFile.Read(fileInBytes_valueSize, 0, valueInstance.objectLength);
                     //Convertimos el value leido
                     //TValue valueToAdd = default(TValue);
-                    valueInstance = valueInstance.ParseToObjectType(ByteStringConverter(fileInBytes_valueSize));
+                    TValue valueReaded = valueInstance.ParseToObjectType(ByteStringConverter(fileInBytes_valueSize));
 
-                    nodeInRamInfo.entries[i].value = valueInstance;
+                    nodeInRamInfo.entries[i].value = valueReaded;
 
 
 
@@ -393,7 +392,7 @@ namespace DataStructuresURL_3._0
                     if (i < nodeInRamInfo.numberOfKeys)
                         WriteInFile(treeFile, valueInstance.ParseToString(nodeInRamInfo.entries[i].value));
                     else
-                        WriteInFile(treeFile, valueInstance.DEFAULT_MIN_VAL_FORMAT);
+                        WriteInFile(treeFile, valueInstance.DEFAULT_FORMAT_);
 
                     if (i != (order - 1) - 1)
                         WriteInFile(treeFile, SINGLE_SEPARATOR);
@@ -790,15 +789,16 @@ namespace DataStructuresURL_3._0
 
             for(int i = 0; i < nodeInRamInfo.numberOfKeys; i++)
             {
-                if (!nodeInRamInfo.isLeaf)
+                if (nodeInRamInfo.isLeaf) // Devolver keys de izq a der si es hoja
                     yield return nodeInRamInfo.entries[i].key;
                 else
                 {
-                    long currentNode = nodeInRam;
-                    DiskRead(nodeInRamInfo.children[i]);
-                    yield return (TKey)nodeInRamInfo.GetEnumerator();
-                    DiskRead(currentNode);
-
+                    long currentNode = nodeInRam; // guardamos puntero de nodo en este valor de recursion
+                    DiskRead(nodeInRamInfo.children[i]); //para hacer tal get enumerator hay que leer hijo correspondiente
+                    yield return (TKey)nodeInRamInfo.GetEnumerator(); // DE LO CONTRARIO HACERLE GET ENUMERATOR AL HIJO QUE CORRESPONDE AL VALOR DE i...
+                   
+                    DiskRead(currentNode); // recuperamos nodo en este valor de recursion, y asi continuar el for que dejamos pendiente...
+                    yield return nodeInRamInfo.entries[i].key; //retornar key que esta entre el hijo izquierdo y derecho...
                 }
             }
 
