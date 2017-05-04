@@ -18,19 +18,30 @@ namespace Lab4_JoseAlvarez_OscarLemus.Controllers
         public ActionResult Index()
         {
 
-            if (Session["dictionary"] != null)
+
+            try
             {
-                dictionary = (Dictionary<string, Celular>)Session["dictionary"];
-                phoneList = dictionary.Values.ToList();
+                if (Session["dictionary"] != null)
+                {
+                    dictionary = (Dictionary<string, Celular>)Session["dictionary"];
+                    phoneList = dictionary.Values.ToList();
+                }
+
+                else
+                    dictionary = new Dictionary<string, Celular>();
+            }
+            catch
+            {
+                return AlertMessage();
             }
 
-            else
-                dictionary = new Dictionary<string, Celular>();
-
-
-
-
             return View(phoneList);
+        }
+
+        public ActionResult AlertMessage()
+        {
+            //http://stackoverflow.com/questions/9646456/how-to-use-message-box-in-mvc-controller
+            return View("AlertMessage");
         }
 
 
@@ -44,28 +55,39 @@ namespace Lab4_JoseAlvarez_OscarLemus.Controllers
         [HttpPost]
         public ActionResult Edit(int id, FormCollection collection)
         {
-            // El id ya es el codigo del producto
-            dictionary = (Dictionary<string, Celular>)Session["dictionary"];
-            phoneList = dictionary.Values.ToList();
+
+            try
+            {
+                // El id ya es el codigo del producto
+                dictionary = (Dictionary<string, Celular>)Session["dictionary"];
+                phoneList = dictionary.Values.ToList();
 
 
-            string phoneBrand = Request.Form[2];
-            string phoneModel = Request.Form[3];
-            string phoneOS = Request.Form[4];
-            string phoneCapacity = Request.Form[5];
-            string phoneRam = Request.Form[6];
+                string phoneBrand = Request.Form[2];
+                string phoneModel = Request.Form[3];
+                string phoneOS = Request.Form[4];
+                string phoneCapacity = Request.Form[5];
+                string phoneRam = Request.Form[6];
 
-            Celular objCelular = new Celular(id.ToString(), phoneBrand, phoneModel, phoneOS, phoneCapacity, phoneRam);
+                Celular objCelular = new Celular(id.ToString(), phoneBrand, phoneModel, phoneOS, phoneCapacity, phoneRam);
 
-            dictionary[id.ToString()] = objCelular;
+                dictionary[id.ToString()] = objCelular;
 
-            //Actualizo la lista que se muestra
-            phoneList = dictionary.Values.ToList();
+                //Actualizo la lista que se muestra
+                phoneList = dictionary.Values.ToList();
 
-            //Actualizo la info del diccionario en la session
-            Session["dictionary"] = dictionary;
+                //Actualizo la info del diccionario en la session
+                Session["dictionary"] = dictionary;
 
-            return RedirectToAction("Index", phoneList);
+                return RedirectToAction("Index", phoneList);
+
+            }
+            catch
+            {
+                return AlertMessage();
+            }
+
+
         }
 
         // GET: Celular/Delete/5
@@ -91,56 +113,72 @@ namespace Lab4_JoseAlvarez_OscarLemus.Controllers
             }
             catch
             {
-                return View();
+                return AlertMessage();
             }
         }
 
         public ActionResult AddPhone(string phoneNumber, string phoneBrand, string phoneModel, string phoneOS, string phoneCapacity, string phoneRAM)
         {
-            // Si tiene algo trabajar sobre ese
-            if (Session["dictionary"] != null)
+            try
             {
-                dictionary = (Dictionary<string, Celular>)Session["dictionary"];
+                // Si tiene algo trabajar sobre ese
+                if (Session["dictionary"] != null)
+                {
+                    dictionary = (Dictionary<string, Celular>)Session["dictionary"];
+                    phoneList = dictionary.Values.ToList();
+                }
+
+                // Si no, crear uno
+                else
+                    dictionary = new Dictionary<string, Celular>();
+
+
+
+                Celular celularObj = new Celular(phoneNumber, phoneBrand, phoneModel, phoneOS, phoneCapacity, phoneRAM);
+
+                // Inserto en el diccionario
+                dictionary.Add(celularObj.phoneNumber, celularObj);
+                //Actualizo la lista que muestra en pantalla
                 phoneList = dictionary.Values.ToList();
+
+                //Actualizo la info del diccionario en la sesion
+                Session["dictionary"] = dictionary;
+
+                return View("Index", phoneList);
             }
-
-            // Si no, crear uno
-            else
-                dictionary = new Dictionary<string, Celular>();
-
-
-
-            Celular celularObj = new Celular(phoneNumber, phoneBrand, phoneModel, phoneOS, phoneCapacity, phoneRAM);
-
-            // Inserto en el diccionario
-            dictionary.Add(celularObj.phoneNumber, celularObj);
-            //Actualizo la lista que muestra en pantalla
-            phoneList = dictionary.Values.ToList();
-
-            //Actualizo la info del diccionario en la sesion
-            Session["dictionary"] = dictionary;
-
-            return View("Index", phoneList);
+            catch
+            {
+                return AlertMessage();
+            }
+            
         }
 
         public ActionResult Search(string phoneNumber)
         {
-            // Fijo entra al search cuando ya tiene algo el diccionario
-            dictionary = (Dictionary<string, Celular>)Session["dictionary"];
+            try
+            {
+                // Fijo entra al search cuando ya tiene algo el diccionario
+                dictionary = (Dictionary<string, Celular>)Session["dictionary"];
 
-            // Actualizo lista que se muestra
-            phoneList = dictionary.Values.ToList();
+                // Actualizo lista que se muestra
+                phoneList = dictionary.Values.ToList();
 
-            //Limpio la lista porque solo quiero mostrar el elemento que busco :v, esta tonto este movimiento pero si solo hacia phoneList.Add(number) no me dejaba, saber porque...
-            phoneList.Clear();
+                //Limpio la lista porque solo quiero mostrar el elemento que busco :v, esta tonto este movimiento pero si solo hacia phoneList.Add(number) no me dejaba, saber porque...
+                phoneList.Clear();
 
 
-            Celular celularObj = dictionary[phoneNumber];
+                Celular celularObj = dictionary[phoneNumber];
 
-            //Agregar el elemento que el usuario quiere buscar
-            phoneList.Add(celularObj);
+                //Agregar el elemento que el usuario quiere buscar
+                phoneList.Add(celularObj);
 
-            return View("Index", phoneList);
+                return View("Index", phoneList);
+            }
+            catch
+            {
+                return AlertMessage();
+            }
+            
         }
     }
 }

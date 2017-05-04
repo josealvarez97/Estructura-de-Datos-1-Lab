@@ -21,7 +21,7 @@ namespace DataStructuresURL_3._0
      * https://msdn.microsoft.com/en-us/library/0zk36dx2.aspx
      * 
      */
-    public class BTree<TKey, TValue> where TKey : IComparable<TKey>, IStringParseable<TKey> where TValue : IStringParseable<TValue>
+    public class BTree<TKey, TValue> : IEnumerable<TKey> where TKey : IComparable<TKey>, IStringParseable<TKey> where TValue : IStringParseable<TValue>
     {
         // Constantes
         const string DEFAULT_FORMAT = "00000000000";
@@ -67,7 +67,7 @@ namespace DataStructuresURL_3._0
         }
 
 
-       
+
         public BTree(int order) //MALO
         {
             //    nodeInRamInfo = new Node<TKey, TValue>();
@@ -126,25 +126,24 @@ namespace DataStructuresURL_3._0
 
             }
 
-
         }
         public BTree(int order, TValue valueModel)
         {
 
 
-                nodeInRamInfo = new Node<TKey, TValue>();
+            nodeInRamInfo = new Node<TKey, TValue>();
 
-                this.order = order;
-                this.minimumDegreeT = order / 2;
-                this.numberOfNodes = 0;
-                this.height = 0;
-                //Estos no salvaron :v con instanciar tkey
-                //http://stackoverflow.com/questions/6410340/generics-in-c-sharp-how-can-i-create-an-instance-of-a-variable-type-with-an-ar
-                //keyToAdd = (TKey)Activator.CreateInstance(typeof(TKey), new object[] { null, null });
+            this.order = order;
+            this.minimumDegreeT = order / 2;
+            this.numberOfNodes = 0;
+            this.height = 0;
+            //Estos no salvaron :v con instanciar tkey
+            //http://stackoverflow.com/questions/6410340/generics-in-c-sharp-how-can-i-create-an-instance-of-a-variable-type-with-an-ar
+            //keyToAdd = (TKey)Activator.CreateInstance(typeof(TKey), new object[] { null, null });
 
-                //http://stackoverflow.com/questions/752/get-a-new-object-instance-from-a-type
-                keyInstance = (TKey)Activator.CreateInstance(typeof(TKey)/*, new object()*/);
-                valueInstance = valueModel;
+            //http://stackoverflow.com/questions/752/get-a-new-object-instance-from-a-type
+            keyInstance = (TKey)Activator.CreateInstance(typeof(TKey)/*, new object()*/);
+            valueInstance = valueModel;
 
 
 
@@ -158,7 +157,7 @@ namespace DataStructuresURL_3._0
             BTree<TKey, TValue> bTree = new BTree<TKey, TValue>(order, valueModel);
             // A esa instancia le especificamos manualmente el treeDiskPath (muy necesario para que funcione DiskRead)
             bTree.treeDiskPath = path;
-            
+
             // Utilizamos DiskRead con el unico fin de actualizar los atributos del encabezado en la RAM (root, nodeInRam, numberOfNodes...)
             bTree.DiskRead(0); //Realmente solo es para actualizar el encabezado...por eso no importa que nodo leamos... por defecto entonces: el 0 
 
@@ -312,9 +311,9 @@ namespace DataStructuresURL_3._0
                     treeFile.Read(fileInBytes_valueSize, 0, valueInstance.objectLength);
                     //Convertimos el value leido
                     //TValue valueToAdd = default(TValue);
-                    valueInstance = valueInstance.ParseToObjectType(ByteStringConverter(fileInBytes_valueSize));
+                    TValue valueReaded = valueInstance.ParseToObjectType(ByteStringConverter(fileInBytes_valueSize));
 
-                    nodeInRamInfo.entries[i].value = valueInstance;
+                    nodeInRamInfo.entries[i].value = valueReaded;
 
 
 
@@ -393,7 +392,7 @@ namespace DataStructuresURL_3._0
                     if (i < nodeInRamInfo.numberOfKeys)
                         WriteInFile(treeFile, valueInstance.ParseToString(nodeInRamInfo.entries[i].value));
                     else
-                        WriteInFile(treeFile, valueInstance.DEFAULT_MIN_VAL_FORMAT);
+                        WriteInFile(treeFile, valueInstance.DEFAULT_FORMAT_);
 
                     if (i != (order - 1) - 1)
                         WriteInFile(treeFile, SINGLE_SEPARATOR);
@@ -770,6 +769,75 @@ namespace DataStructuresURL_3._0
 
 
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+        // IMPLEMENTATION OF IENUMERABLE<TKEY>
+
+        public IEnumerator<TKey> GetEnumerator()
+        {
+
+            for(int i = 0; i < nodeInRamInfo.numberOfKeys; i++)
+            {
+                if (nodeInRamInfo.isLeaf) // Devolver keys de izq a der si es hoja
+                    yield return nodeInRamInfo.entries[i].key;
+                else
+                {
+                    long currentNode = nodeInRam; // guardamos puntero de nodo en este valor de recursion
+                    DiskRead(nodeInRamInfo.children[i]); //para hacer tal get enumerator hay que leer hijo correspondiente
+                    yield return (TKey)nodeInRamInfo.GetEnumerator(); // DE LO CONTRARIO HACERLE GET ENUMERATOR AL HIJO QUE CORRESPONDE AL VALOR DE i...
+                   
+                    DiskRead(currentNode); // recuperamos nodo en este valor de recursion, y asi continuar el for que dejamos pendiente...
+                    yield return nodeInRamInfo.entries[i].key; //retornar key que esta entre el hijo izquierdo y derecho...
+                }
+            }
+
+
+            //foreach (Entry<TKey, TValue> entry in nodeInRamInfo.entries)
+            //{
+            //    long currentNode = nodeInRam;
+            //    if (nodeInRamInfo.isLeaf)
+            //        yield return entry.key;
+            //    else
+            //    {
+
+            //        DiskRead(nodeInRamInfo.entries)
+
+            //        for (int i = 0; i < nodeInRamInfo.numberOfKeys; i++)
+            //        {
+
+            //            DiskRead(nodeInRamInfo.children[i]);
+            //            yield return (TKey)nodeInRamInfo.GetEnumerator();
+            //            DiskRead(currentNode);
+            //            yield return 
+
+            //        }
+
+            //    }
+
+            //}
+
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+
+        {
+            return this.GetEnumerator();
+        }
+
+
+
+
 
     }
 }
